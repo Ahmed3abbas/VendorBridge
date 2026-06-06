@@ -36,12 +36,12 @@ export default function RFQCreate() {
   const { data: vendorData } = useVendors({ status: 'ACTIVE', limit: 100 });
   const vendors = vendorData?.data ?? [];
 
-  const { register, handleSubmit, trigger, watch, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, trigger, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
     defaultValues: { items: [{ product_name: '', quantity: 1, unit: 'pcs', description: '' }], vendor_ids: [] },
   });
 
-  const { fields, append, remove } = useFieldArray({ name: 'items', control: undefined });
+  const { fields, append, remove } = useFieldArray({ name: 'items', control });
   const watchItems = watch('items');
   const watchVendorIds = watch('vendor_ids');
 

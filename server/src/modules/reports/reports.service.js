@@ -8,7 +8,12 @@ export const getDashboard = async ({ userId, role }) => {
     ? (await db.user.findUnique({ where: { id: userId }, include: { vendor: { select: { id: true } } } }))?.vendor?.id
     : null;
 
-  const [pendingApprovals, activeRFQs, recentPOs, recentInvoices] = await Promise.all([
+  // Get start of current month for monthly metrics
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const [pendingApprovals, activeRFQs, monthlyPOs, totalInvoiced, recentPOs, recentInvoices] = await Promise.all([
     isVendor
       ? 0
       : db.approval.count({ where: { status: 'PENDING' } }),
@@ -20,6 +25,24 @@ export const getDashboard = async ({ userId, role }) => {
         ...(isVendor ? { rfq_vendors: { some: { vendor_id: vendorId } } } : {}),
       },
     }),
+
+    // Monthly PO count
+    db.purchaseOrder.count({
+      where: {
+        issued_at: { gte: startOfMonth },
+        ...(vendorId ? { vendor_id: vendorId } : {}),
+      },
+    }),
+
+    // Total invoiced amount for current month (SENT or PAID status)
+    db.invoice.aggregate({
+      where: {
+        created_at: { gte: startOfMonth },
+        status: { in: ['SENT', 'PAID'] },
+        ...(vendorId ? { purchase_order: { vendor_id: vendorId } } : {}),
+      },
+      _sum: { total: true },
+    }).then(result => result._sum.total || 0),
 
     db.purchaseOrder.findMany({
       where: vendorId ? { vendor_id: vendorId } : {},
@@ -36,7 +59,14 @@ export const getDashboard = async ({ userId, role }) => {
     }),
   ]);
 
-  return { pendingApprovals, activeRFQs, recentPOs, recentInvoices };
+  return { 
+    pendingApprovals, 
+    activeRFQs, 
+    monthlyPOs, 
+    totalInvoiced: parseFloat(totalInvoiced.toFixed(2)),
+    recentPOs, 
+    recentInvoices 
+  };
 };
 
 export const getSpendTrend = async () => {
@@ -53,12 +83,20 @@ export const getSpendTrend = async () => {
   const monthly = {};
   pos.forEach(({ issued_at, total_amount }) => {
     const key = `${issued_at.getFullYear()}-${String(issued_at.getMonth() + 1).padStart(2, '0')}`;
-    monthly[key] = (monthly[key] || 0) + total_amount;
+    if (!monthly[key]) {
+      monthly[key] = { total: 0, count: 0 };
+    }
+    monthly[key].total += total_amount;
+    monthly[key].count += 1;
   });
 
   return Object.entries(monthly)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, total]) => ({ month, total: parseFloat(total.toFixed(2)) }));
+    .map(([month, { total, count }]) => ({ 
+      month, 
+      total: parseFloat(total.toFixed(2)),
+      count 
+    }));
 };
 
 export const getVendorPerformance = async () => {
@@ -78,12 +116,12 @@ export const getVendorPerformance = async () => {
     const completedPOs = v.purchase_orders.filter((p) => p.status === 'COMPLETED').length;
 
     return {
-      vendorId: v.id,
-      vendorName: v.name,
-      totalPOs,
-      totalSpend: parseFloat(totalSpend.toFixed(2)),
-      winRate: totalQuotes ? Math.round((wonQuotes / totalQuotes) * 100) : 0,
-      onTimeRate: totalPOs ? Math.round((completedPOs / totalPOs) * 100) : 0,
+      vendor_id: v.id,
+      name: v.name,
+      total_pos: totalPOs,
+      total_spend: parseFloat(totalSpend.toFixed(2)),
+      win_rate: totalQuotes ? Math.round((wonQuotes / totalQuotes) * 100) : 0,
+      on_time_pct: totalPOs ? Math.round((completedPOs / totalPOs) * 100) : 0,
     };
   });
 };

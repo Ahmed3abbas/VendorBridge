@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDashboardStats } from '../hooks/useReports';
 import { useRFQs } from '../hooks/useRFQ';
 import { usePurchaseOrders } from '../hooks/usePurchaseOrders';
-import { formatCurrency } from '../utils/formatCurrency';
+import { formatCurrency, formatCurrencyCompact } from '../utils/formatCurrency';
 import { formatDate } from '../utils/formatDate';
 import { CardSkeleton, TableSkeleton } from '../components/LoadingSkeleton';
 import StatusBadge from '../components/StatusBadge';
@@ -62,7 +62,7 @@ export default function Dashboard() {
                       <p className="text-label-caps text-text-secondary uppercase mb-2">{m.label}</p>
                       <p className="text-headline-lg text-text-primary font-bold">
                         {m.currency
-                          ? formatCurrency(stats?.[m.key] ?? 0)
+                          ? formatCurrencyCompact(stats?.[m.key] ?? 0)
                           : (stats?.[m.key] ?? 0)}
                       </p>
                     </div>
