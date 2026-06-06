@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  PROCUREMENT_OFFICER
+  VENDOR
+}
+
+enum VendorStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+}
+
+enum RFQStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum QuotationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  SELECTED
+  REJECTED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum POStatus {
+  ISSUED
+  ACKNOWLEDGED
+  COMPLETED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(PROCUREMENT_OFFICER)
+  vendorId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  vendor       Vendor?       @relation(fields: [vendorId], references: [id])
+  rfqs         RFQ[]
+  approvals    Approval[]
+  activityLogs ActivityLog[]
+
+  @@map("users")
+}
+
+model Vendor {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  phone        String?
+  address      String?
+  gstNumber    String?
+  category     String?
+  status       VendorStatus @default(ACTIVE)
+  rating       Float        @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  users           User[]
+  rfqVendors      RFQVendor[]
+  quotations      Quotation[]
+  purchaseOrders  PurchaseOrder[]
+  invoices        Invoice[]
+
+  @@map("vendors")
+}
+
+model RFQ {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  status      RFQStatus @default(DRAFT)
+  deadline    DateTime
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdBy  User        @relation(fields: [createdById], references: [id])
+  items      RFQItem[]
+  rfqVendors RFQVendor[]
+  quotations Quotation[]
+
+  @@map("rfqs")
+}
+
+model RFQItem {
+  id          String  @id @default(cuid())
+  rfqId       String
+  description String
+  quantity    Float
+  unit        String?
+
+  rfq        RFQ             @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  quoteItems QuotationItem[]
+
+  @@map("rfq_items")
+}
+
+model RFQVendor {
+  id       String   @id @default(cuid())
+  rfqId    String
+  vendorId String
+  invitedAt DateTime @default(now())
+
+  rfq    RFQ    @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+
+  @@unique([rfqId, vendorId])
+  @@map("rfq_vendors")
+}
+
+model Quotation {
+  id        String          @id @default(cuid())
+  rfqId     String
+  vendorId  String
+  status    QuotationStatus @default(SUBMITTED)
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  rfq           RFQ             @relation(fields: [rfqId], references: [id])
+  vendor        Vendor          @relation(fields: [vendorId], references: [id])
+  items         QuotationItem[]
+  approval      Approval?
+  purchaseOrder PurchaseOrder?
+
+  @@unique([rfqId, vendorId])
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id          String @id @default(cuid())
+  quotationId String
+  rfqItemId   String
+  unitPrice   Float
+  quantity    Float
+  subtotal    Float
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  rfqItem   RFQItem   @relation(fields: [rfqItemId], references: [id])
+
+  @@map("quotation_items")
+}
+
+model Approval {
+  id          String         @id @default(cuid())
+  quotationId String         @unique
+  status      ApprovalStatus @default(PENDING)
+  remarks     String?
+  actedById   String?
+  actedAt     DateTime?
+  createdAt   DateTime       @default(now())
+
+  quotation Quotation @relation(fields: [quotationId], references: [id])
+  actedBy   User?     @relation(fields: [actedById], references: [id])
+
+  @@map("approvals")
+}
+
+model PurchaseOrder {
+  id          String   @id @default(cuid())
+  poNumber    String   @unique
+  quotationId String   @unique
+  vendorId    String
+  subtotal    Float
+  taxRate     Float    @default(18)
+  taxAmount   Float
+  total       Float
+  status      POStatus @default(ISSUED)
+  issuedAt    DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  quotation Quotation @relation(fields: [quotationId], references: [id])
+  vendor    Vendor    @relation(fields: [vendorId], references: [id])
+  invoices  Invoice[]
+
+  @@map("purchase_orders")
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  poId          String
+  vendorId      String
+  subtotal      Float
+  taxRate       Float         @default(18)
+  taxAmount     Float
+  total         Float
+  status        InvoiceStatus @default(DRAFT)
+  dueDate       DateTime?
+  sentAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  po     PurchaseOrder @relation(fields: [poId], references: [id])
+  vendor Vendor        @relation(fields: [vendorId], references: [id])
+
+  @@map("invoices")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model Attachment {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  filename   String
+  url        String
+  createdAt  DateTime @default(now())
+
+  @@map("attachments")
+}
