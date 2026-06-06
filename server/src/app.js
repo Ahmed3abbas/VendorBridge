@@ -34,7 +34,7 @@ app.use('/api/vendors', vendorRoutes);
 app.use('/api/rfq', rfqRoutes);
 app.use('/api', quotationRoutes);
 
-// M2 routes
+// M2 routes (auth handled inside each router)
 app.use('/api/approvals', approvalsRoutes);
 app.use('/api/purchase-orders', poRoutes);
 app.use('/api/invoices', invoicesRoutes);

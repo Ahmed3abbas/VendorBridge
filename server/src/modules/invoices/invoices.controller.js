@@ -17,12 +17,12 @@ export const list = asyncHandler(async (req, res) => {
 });
 
 export const getById = asyncHandler(async (req, res) => {
-  const data = await service.getInvoiceById(req.params.id);
+  const data = await service.getInvoiceById(req.params.id, { userId: req.user.id, role: req.user.role });
   sendSuccess(res, data);
 });
 
 export const downloadPDF = asyncHandler(async (req, res) => {
-  const invoice = await service.getInvoiceById(req.params.id);
+  const invoice = await service.getInvoiceById(req.params.id, { userId: req.user.id, role: req.user.role });
   const po = invoice.purchase_order;
   const items = po.quotation.items
     .map((i) => `<tr><td>${i.rfq_item.product_name}</td><td>${i.quantity}</td><td>₹${i.unit_price}</td><td>₹${i.subtotal}</td></tr>`)
@@ -49,7 +49,7 @@ export const downloadPDF = asyncHandler(async (req, res) => {
 });
 
 export const sendInvoiceEmail = asyncHandler(async (req, res) => {
-  const invoice = await service.getInvoiceById(req.params.id);
+  const invoice = await service.getInvoiceById(req.params.id, { userId: req.user.id, role: req.user.role });
   const po = invoice.purchase_order;
   const items = po.quotation.items
     .map((i) => `<tr><td>${i.rfq_item.product_name}</td><td>${i.quantity}</td><td>₹${i.unit_price}</td><td>₹${i.subtotal}</td></tr>`)

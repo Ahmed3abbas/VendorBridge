@@ -59,9 +59,15 @@ export const listInvoices = async ({ status, page = 1, limit = 20 }) => {
   return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
 };
 
-export const getInvoiceById = async (id) => {
+export const getInvoiceById = async (id, { userId, role } = {}) => {
   const invoice = await db.invoice.findUnique({ where: { id }, include: invoiceIncludes });
   if (!invoice) throw new AppError('Invoice not found', 404, 'NOT_FOUND');
+
+  if (role === 'VENDOR') {
+    const user = await db.user.findUnique({ where: { id: userId }, include: { vendor: { select: { id: true } } } });
+    if (invoice.purchase_order.vendor_id !== user?.vendor?.id) throw new AppError('Forbidden', 403, 'FORBIDDEN');
+  }
+
   return invoice;
 };
 

@@ -17,12 +17,12 @@ export const listPOs = asyncHandler(async (req, res) => {
 });
 
 export const getPOById = asyncHandler(async (req, res) => {
-  const data = await service.getPOById(req.params.id);
+  const data = await service.getPOById(req.params.id, { userId: req.user.id, role: req.user.role });
   sendSuccess(res, data);
 });
 
 export const downloadPDF = asyncHandler(async (req, res) => {
-  const po = await service.getPOById(req.params.id);
+  const po = await service.getPOById(req.params.id, { userId: req.user.id, role: req.user.role });
   const items = po.quotation.items
     .map((i) => `<tr><td>${i.rfq_item.product_name}</td><td>${i.quantity}</td><td>₹${i.unit_price}</td><td>₹${i.subtotal}</td></tr>`)
     .join('');

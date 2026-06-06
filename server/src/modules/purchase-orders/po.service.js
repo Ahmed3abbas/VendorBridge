@@ -33,9 +33,15 @@ export const listPOs = async ({ status, page = 1, limit = 20, userId, role }) =>
   return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
 };
 
-export const getPOById = async (id) => {
+export const getPOById = async (id, { userId, role } = {}) => {
   const po = await db.purchaseOrder.findUnique({ where: { id }, include: poIncludes });
   if (!po) throw new AppError('Purchase order not found', 404, 'NOT_FOUND');
+
+  if (role === 'VENDOR') {
+    const user = await db.user.findUnique({ where: { id: userId }, include: { vendor: { select: { id: true } } } });
+    if (po.vendor_id !== user?.vendor?.id) throw new AppError('Forbidden', 403, 'FORBIDDEN');
+  }
+
   return po;
 };
 
