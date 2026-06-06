@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VendorBridge - Activity &amp; Logs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#33343b",
+                        "primary": "#4be277",
+                        "on-surface": "#e2e2eb",
+                        "tertiary-fixed": "#ffdad5",
+                        "text-secondary": "#9CA3AF",
+                        "secondary-container": "#0566d9",
+                        "border-subtle": "#2A2E3A",
+                        "on-primary-container": "#004b1e",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-low": "#191b22",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-primary-fixed": "#002109",
+                        "primary-container": "#22c55e",
+                        "accent-red": "#EF4444",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#373940",
+                        "surface-tint": "#4ae176",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-high": "#282a30",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-surface-variant": "#bccbb9",
+                        "tertiary-container": "#ff8b7c",
+                        "on-secondary-container": "#e6ecff",
+                        "on-error": "#690005",
+                        "background": "#111319",
+                        "on-tertiary": "#60130d",
+                        "tertiary-fixed-dim": "#ffb4a9",
+                        "surface-dim": "#111319",
+                        "print-white": "#FFFFFF",
+                        "inverse-surface": "#e2e2eb",
+                        "on-tertiary-fixed-variant": "#7f2a21",
+                        "on-tertiary-container": "#76231b",
+                        "accent-amber": "#F59E0B",
+                        "nav-top": "#141720",
+                        "inverse-on-surface": "#2e3037",
+                        "surface-container-highest": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "on-primary": "#003915",
+                        "surface-hover": "#242836",
+                        "outline": "#869585",
+                        "primary-fixed-dim": "#4ae176",
+                        "on-background": "#e2e2eb",
+                        "tertiary": "#ffb5ab",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005321",
+                        "secondary": "#adc6ff",
+                        "accent-teal": "#14B8A6",
+                        "on-tertiary-fixed": "#410001",
+                        "surface": "#1A1D27",
+                        "text-primary": "#F1F3F5",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#6bff8f",
+                        "outline-variant": "#3d4a3d",
+                        "inverse-primary": "#006e2f"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "base": "8px",
+                        "input-height": "40px",
+                        "sidebar-collapsed": "64px",
+                        "container-padding": "32px",
+                        "sidebar-width": "240px",
+                        "table-row-height": "48px",
+                        "top-nav-height": "56px"
+                    },
+                    fontFamily: {
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for technical aesthetic */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2A2E3A; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #33343b; }
+    </style>
+</head>
+<body class="bg-background text-text-primary antialiased selection:bg-primary/20 selection:text-primary">
+<!-- TopNavBar -->
+<header class="bg-nav-top border-b border-border-subtle fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding h-[56px]">
+<div class="flex items-center gap-6">
+<span class="text-headline-sm font-headline-sm font-bold text-primary">VendorBridge</span>
+<div class="hidden md:flex items-center relative ml-4">
+<span class="material-symbols-outlined absolute left-3 text-text-secondary text-[18px]">search</span>
+<input class="bg-surface border border-border-subtle text-body-sm font-body-sm text-text-primary rounded h-[32px] pl-9 pr-4 w-[240px] focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary/50 placeholder:text-text-secondary transition-all" placeholder="Search records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-[32px] h-[32px] flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-hover hover:text-text-primary transition-colors active:scale-95 duration-100" title="dark_mode">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button class="w-[32px] h-[32px] flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-hover hover:text-text-primary transition-colors active:scale-95 duration-100 relative" title="notifications">
+<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-accent-red"></span>
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<div class="w-[32px] h-[32px] rounded-full bg-surface-variant border border-border-subtle flex items-center justify-center font-label-caps text-label-caps text-text-primary ml-2 select-none" title="User Profile">
+                JD
+            </div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="bg-surface border-r border-border-subtle fixed left-0 top-0 h-full w-[240px] pt-[56px] flex flex-col z-40 hidden md:flex">
+<div class="p-6 border-b border-border-subtle">
+<h2 class="font-headline-md text-headline-md text-primary">VendorBridge</h2>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Procurement ERP</p>
+</div>
+<div class="flex-1 overflow-y-auto py-4">
+<ul class="flex flex-col gap-1 px-3">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">storefront</span>
+                        Vendors
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">request_quote</span>
+                        RFQs
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">description</span>
+                        Quotations
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">fact_check</span>
+                        Approvals
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">shopping_cart</span>
+                        Purchase Orders
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">receipt</span>
+                        Invoices
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">analytics</span>
+                        Reports
+                    </a>
+</li>
+<li>
+<!-- Active State Applied -->
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-surface-hover text-primary border-l-4 border-primary font-body-sm text-body-sm font-semibold transition-all scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-[20px] text-primary" style="font-variation-settings: 'FILL' 1;">history</span>
+                        Activity
+                    </a>
+</li>
+</ul>
+</div>
+<div class="p-3 border-t border-border-subtle">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">settings</span>
+                        Settings
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-text-primary transition-colors">help</span>
+                        Support
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="md:ml-[240px] pt-[56px] min-h-screen pb-container-padding">
+<!-- Header -->
+<header class="px-container-padding py-8 border-b border-border-subtle bg-surface-container-lowest">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-text-primary">Activity &amp; Logs</h1>
+<p class="font-body-md text-body-md text-text-secondary mt-1">System-wide audit trail and recent transactions.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-surface hover:bg-surface-hover border border-border-subtle text-text-primary font-body-sm text-body-sm px-4 h-input-height rounded transition-colors flex items-center gap-2 active:scale-98">
+<span class="material-symbols-outlined text-[16px]">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<!-- Filter Tabs -->
+<div class="flex gap-2 mt-8 overflow-x-auto pb-1 scrollbar-hide">
+<button class="bg-primary/10 text-primary font-body-sm text-body-sm px-4 py-1.5 rounded-full border border-primary/20 whitespace-nowrap transition-colors">
+                    All
+                </button>
+<button class="bg-surface border border-border-subtle text-on-surface-variant hover:text-text-primary hover:bg-surface-hover font-body-sm text-body-sm px-4 py-1.5 rounded-full whitespace-nowrap transition-colors">
+                    RFQ
+                </button>
+<button class="bg-surface border border-border-subtle text-on-surface-variant hover:text-text-primary hover:bg-surface-hover font-body-sm text-body-sm px-4 py-1.5 rounded-full whitespace-nowrap transition-colors">
+                    Approvals
+                </button>
+<button class="bg-surface border border-border-subtle text-on-surface-variant hover:text-text-primary hover:bg-surface-hover font-body-sm text-body-sm px-4 py-1.5 rounded-full whitespace-nowrap transition-colors">
+                    Invoices
+                </button>
+<button class="bg-surface border border-border-subtle text-on-surface-variant hover:text-text-primary hover:bg-surface-hover font-body-sm text-body-sm px-4 py-1.5 rounded-full whitespace-nowrap transition-colors">
+                    Vendors
+                </button>
+</div>
+</header>
+<div class="p-container-padding grid grid-cols-1 xl:grid-cols-12 gap-container-padding">
+<!-- Left Column: Timeline (Spans 8 cols on large screens) -->
+<div class="xl:col-span-8">
+<div class="relative pl-[20px]">
+<!-- Continuous Line -->
+<div class="absolute left-[39px] top-[24px] bottom-[-24px] w-[1px] bg-border-subtle z-0"></div>
+<div class="flex flex-col gap-6">
+<!-- Entry: Vendor Added (Red) -->
+<div class="relative flex gap-4 group">
+<div class="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-accent-red/10 border border-accent-red/20 text-accent-red z-10 shrink-0 shadow-[0_0_15px_rgba(239,68,68,0.1)] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+</div>
+<div class="bg-surface border border-border-subtle rounded-lg p-5 flex-1 hover:bg-surface-hover transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">New Vendor Onboarded</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">TechCorp Global Solutions was added to the registry by Admin.</p>
+</div>
+<span class="font-data-mono text-data-mono text-text-secondary whitespace-nowrap">10:42 AM</span>
+</div>
+<div class="mt-4 pt-4 border-t border-border-subtle flex gap-4">
+<span class="font-data-mono text-data-mono text-text-secondary text-[11px] bg-surface-variant px-2 py-1 rounded">VID-2023-894</span>
+<span class="font-data-mono text-data-mono text-accent-red text-[11px] bg-accent-red/10 px-2 py-1 rounded">Action Required: Verify Tax ID</span>
+</div>
+</div>
+</div>
+<!-- Entry: Quotation Selected (Green) -->
+<div class="relative flex gap-4 group">
+<div class="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-primary/10 border border-primary/20 text-primary z-10 shrink-0 shadow-[0_0_15px_rgba(75,226,119,0.1)] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-surface border border-border-subtle rounded-lg p-5 flex-1 hover:bg-surface-hover transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Quotation Selected</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Winning bid selected for IT Hardware Refresh Q3.</p>
+</div>
+<span class="font-data-mono text-data-mono text-text-secondary whitespace-nowrap">09:15 AM</span>
+</div>
+<div class="mt-4 flex items-center gap-3 bg-surface-variant/50 p-3 rounded border border-border-subtle">
+<span class="material-symbols-outlined text-[20px] text-text-secondary">description</span>
+<div class="flex-1">
+<p class="font-body-sm text-body-sm text-text-primary">Quote_Q3_Hardware_Final.pdf</p>
+<p class="font-data-mono text-data-mono text-text-secondary text-[11px]">2.4 MB • Submitted by Nexus IT</p>
+</div>
+<span class="font-label-caps text-label-caps text-primary bg-primary/10 px-2 py-1 rounded-full">$45,200.00</span>
+</div>
+</div>
+</div>
+<!-- Entry: RFQ Published (Blue) -->
+<div class="relative flex gap-4 group">
+<div class="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-secondary-container/20 border border-secondary-container/30 text-secondary z-10 shrink-0 shadow-[0_0_15px_rgba(5,102,217,0.1)] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px]">campaign</span>
+</div>
+<div class="bg-surface border border-border-subtle rounded-lg p-5 flex-1 hover:bg-surface-hover transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">RFQ Published Globally</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Request for Quotation broadcasted to 14 eligible suppliers.</p>
+</div>
+<span class="font-data-mono text-data-mono text-text-secondary whitespace-nowrap">Yesterday</span>
+</div>
+<div class="mt-4 pt-4 border-t border-border-subtle flex gap-4">
+<span class="font-data-mono text-data-mono text-text-secondary text-[11px] bg-surface-variant px-2 py-1 rounded">RFQ-2023-112</span>
+<span class="font-data-mono text-data-mono text-text-secondary text-[11px] bg-surface-variant px-2 py-1 rounded">Category: Cloud Infrastructure</span>
+</div>
+</div>
+</div>
+<!-- Entry: Approval Pending (Amber) -->
+<div class="relative flex gap-4 group">
+<div class="w-[40px] h-[40px] rounded-full flex items-center justify-center bg-accent-amber/10 border border-accent-amber/20 text-accent-amber z-10 shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.1)] group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[18px]">pending_actions</span>
+</div>
+<div class="bg-surface border border-border-subtle rounded-lg p-5 flex-1 hover:bg-surface-hover transition-colors shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Purchase Order Awaiting Approval</h3>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">PO-2023-441 exceeds automatic threshold and requires Level 2 sign-off.</p>
+</div>
+<span class="font-data-mono text-data-mono text-text-secondary whitespace-nowrap">Yesterday</span>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="bg-primary hover:bg-primary/90 text-background font-body-sm text-body-sm px-4 py-2 rounded transition-colors active:scale-95 duration-100">
+                                        Review PO
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-center">
+<button class="text-secondary hover:text-secondary-fixed font-body-sm text-body-sm transition-colors flex items-center gap-1">
+                        Load Older Entries
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Info Card (Spans 4 cols on large screens) -->
+<div class="xl:col-span-4">
+<div class="sticky top-[144px]">
+<div class="bg-surface border border-border-subtle rounded-lg p-6 relative overflow-hidden">
+<!-- Decorative background element -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="flex items-center gap-3 mb-4 relative z-10">
+<div class="w-10 h-10 rounded bg-secondary-container/20 flex items-center justify-center text-secondary border border-secondary/20">
+<span class="material-symbols-outlined text-[20px]">enhanced_encryption</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary">Immutable Logs</h3>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mb-6 relative z-10">
+                            VendorBridge employs cryptographic hashing to ensure that all audit entries are tamper-proof. Once an action is recorded in this timeline, it cannot be altered or deleted.
+                        </p>
+<div class="space-y-4 relative z-10">
+<div class="bg-surface-variant rounded p-3 border border-border-subtle">
+<span class="font-label-caps text-label-caps text-text-secondary block mb-1">Current Blockchain Sync</span>
+<span class="font-data-mono text-data-mono text-primary flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    Block #4892210
+                                </span>
+</div>
+<div class="bg-surface-variant rounded p-3 border border-border-subtle">
+<span class="font-label-caps text-label-caps text-text-secondary block mb-1">Data Retention Policy</span>
+<span class="font-body-sm text-body-sm text-text-primary">
+                                    7 Years (Compliance Tier 3)
+                                </span>
+</div>
+</div>
+<button class="w-full mt-6 bg-transparent border border-border-subtle hover:bg-surface-hover text-text-primary font-body-sm text-body-sm py-2 rounded transition-colors relative z-10">
+                            View Compliance Certificate
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

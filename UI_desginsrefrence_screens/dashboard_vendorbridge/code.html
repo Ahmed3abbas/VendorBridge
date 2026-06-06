@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - VendorBridge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#33343b",
+                        "primary": "#4be277",
+                        "on-surface": "#e2e2eb",
+                        "tertiary-fixed": "#ffdad5",
+                        "text-secondary": "#9CA3AF",
+                        "secondary-container": "#0566d9",
+                        "border-subtle": "#2A2E3A",
+                        "on-primary-container": "#004b1e",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-low": "#191b22",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-primary-fixed": "#002109",
+                        "primary-container": "#22c55e",
+                        "accent-red": "#EF4444",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#373940",
+                        "surface-tint": "#4ae176",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-high": "#282a30",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-surface-variant": "#bccbb9",
+                        "tertiary-container": "#ff8b7c",
+                        "on-secondary-container": "#e6ecff",
+                        "on-error": "#690005",
+                        "background": "#111319",
+                        "on-tertiary": "#60130d",
+                        "tertiary-fixed-dim": "#ffb4a9",
+                        "surface-dim": "#111319",
+                        "print-white": "#FFFFFF",
+                        "inverse-surface": "#e2e2eb",
+                        "on-tertiary-fixed-variant": "#7f2a21",
+                        "on-tertiary-container": "#76231b",
+                        "accent-amber": "#F59E0B",
+                        "nav-top": "#141720",
+                        "inverse-on-surface": "#2e3037",
+                        "surface-container-highest": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "on-primary": "#003915",
+                        "surface-hover": "#242836",
+                        "outline": "#869585",
+                        "primary-fixed-dim": "#4ae176",
+                        "on-background": "#e2e2eb",
+                        "tertiary": "#ffb5ab",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005321",
+                        "secondary": "#adc6ff",
+                        "accent-teal": "#14B8A6",
+                        "on-tertiary-fixed": "#410001",
+                        "surface": "#1A1D27",
+                        "text-primary": "#F1F3F5",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#6bff8f",
+                        "outline-variant": "#3d4a3d",
+                        "inverse-primary": "#006e2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "input-height": "40px",
+                        "sidebar-collapsed": "64px",
+                        "container-padding": "32px",
+                        "sidebar-width": "240px",
+                        "table-row-height": "48px",
+                        "top-nav-height": "56px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0F1117; color: #F1F3F5; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined[data-weight="fill"] { font-variation-settings: 'FILL' 1; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0F1117; }
+        ::-webkit-scrollbar-thumb { background: #2A2E3A; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #33343b; }
+    </style>
+</head>
+<body class="bg-background text-text-primary antialiased flex">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-surface text-primary dark:text-primary font-body-sm text-body-sm docked left-0 top-0 h-full w-sidebar-width border-r border-border-subtle flat no shadows fixed left-0 top-0 h-full w-[240px] pt-[56px] flex flex-col z-40 hidden xl:flex">
+<div class="px-base py-base flex-1 overflow-y-auto">
+<ul class="space-y-[4px]">
+<li>
+<a class="flex items-center px-3 py-2 rounded bg-surface-hover text-primary border-l-4 border-primary font-semibold Active: scale-[0.98] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">storefront</span>
+                        Vendors
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">request_quote</span>
+                        RFQs
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+                        Quotations
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">fact_check</span>
+                        Approvals
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">shopping_cart</span>
+                        Purchase Orders
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">receipt</span>
+                        Invoices
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">analytics</span>
+                        Reports
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">history</span>
+                        Activity
+                    </a>
+</li>
+</ul>
+</div>
+<div class="px-base py-base border-t border-border-subtle">
+<ul class="space-y-[4px]">
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                        Settings
+                    </a>
+</li>
+<li>
+<a class="flex items-center px-3 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-hover hover:bg-surface-hover transition-all" href="#">
+<span class="material-symbols-outlined mr-3">help</span>
+                        Support
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-h-screen xl:ml-[240px]">
+<!-- TopNavBar -->
+<header class="bg-nav-top dark:bg-nav-top text-primary dark:text-primary font-body-md text-body-md docked full-width top-0 h-[56px] border-b border-border-subtle flat no shadows fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding xl:pl-[272px]">
+<div class="flex items-center gap-4">
+<span class="text-headline-sm font-headline-sm font-bold text-primary">VendorBridge</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-[18px]">search</span>
+<input class="bg-surface border border-border-subtle rounded-DEFAULT h-input-height pl-10 pr-4 text-body-sm font-body-sm text-text-primary focus:border-secondary-container focus:outline-none focus:ring-1 focus:ring-secondary-container w-[240px] transition-colors" placeholder="Search..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-colors rounded-full flex items-center justify-center Active: scale-95 transition-transform duration-100">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-colors rounded-full flex items-center justify-center Active: scale-95 transition-transform duration-100 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-accent-red rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-border-subtle overflow-hidden cursor-pointer">
+<!-- Placeholder for profile image -->
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 pt-[88px] px-container-padding pb-container-padding">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="font-headline-lg text-headline-lg text-text-primary">Dashboard</h1>
+<p class="font-body-md text-body-md text-text-secondary mt-1">Welcome back, Procurement Officer</p>
+</div>
+<!-- Dashboard Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+<!-- Section 1: KPI Cards (Full width on mobile, spans 12 cols on desktop) -->
+<div class="xl:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- KPI Card 1 -->
+<div class="bg-surface border border-border-subtle rounded-DEFAULT p-6 shadow-[0_1px_3px_rgba(0,0,0,0.3)] hover:bg-surface-hover transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-label-caps text-label-caps text-text-secondary uppercase">Active RFQs</h3>
+<span class="material-symbols-outlined text-secondary-container bg-secondary-container/10 p-2 rounded-full">request_quote</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-secondary-container">12</span>
+</div>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface border border-border-subtle rounded-DEFAULT p-6 shadow-[0_1px_3px_rgba(0,0,0,0.3)] hover:bg-surface-hover transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-label-caps text-label-caps text-text-secondary uppercase">Pending Approvals</h3>
+<span class="material-symbols-outlined text-accent-amber bg-accent-amber/10 p-2 rounded-full">fact_check</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-accent-amber">5</span>
+</div>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface border border-border-subtle rounded-DEFAULT p-6 shadow-[0_1px_3px_rgba(0,0,0,0.3)] hover:bg-surface-hover transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-label-caps text-label-caps text-text-secondary uppercase">POs This Month</h3>
+<span class="material-symbols-outlined text-primary-container bg-primary-container/10 p-2 rounded-full">shopping_cart</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-primary-container">₹2.3L</span>
+</div>
+</div>
+<!-- KPI Card 4 -->
+<div class="bg-surface border border-border-subtle rounded-DEFAULT p-6 shadow-[0_1px_3px_rgba(0,0,0,0.3)] hover:bg-surface-hover transition-colors group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-label-caps text-label-caps text-text-secondary uppercase">Overdue Invoices</h3>
+<span class="material-symbols-outlined text-accent-red bg-accent-red/10 p-2 rounded-full">receipt_long</span>
+</div>
+<div class="flex items-end gap-3">
+<span class="font-headline-lg text-headline-lg text-accent-red">3</span>
+</div>
+</div>
+</div>
+<!-- Section 2 & 4: Table and Quick Actions -->
+<div class="xl:col-span-8 flex flex-col gap-6">
+<!-- Section 4: Quick Actions (Placed above table for better UX flow) -->
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary-container text-on-primary-fixed font-body-sm text-body-sm font-semibold px-4 py-2 rounded-DEFAULT flex items-center gap-2 hover:bg-surface-tint transition-all active:scale-95 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            New RFQ
+                        </button>
+<button class="bg-transparent border border-border-subtle text-primary font-body-sm text-body-sm px-4 py-2 rounded-DEFAULT flex items-center gap-2 hover:bg-surface-hover transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                            Add Vendor
+                        </button>
+<button class="bg-transparent border border-border-subtle text-primary font-body-sm text-body-sm px-4 py-2 rounded-DEFAULT flex items-center gap-2 hover:bg-surface-hover transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                            View Invoices
+                        </button>
+</div>
+<!-- Section 2: Recent Purchase Orders -->
+<div class="bg-surface border border-border-subtle rounded-DEFAULT shadow-[0_1px_3px_rgba(0,0,0,0.3)] flex flex-col flex-1">
+<div class="p-4 border-b border-border-subtle flex justify-between items-center">
+<h2 class="font-headline-sm text-headline-sm text-text-primary">Recent Purchase Orders</h2>
+<button class="text-secondary-container font-body-sm text-body-sm hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-border-subtle bg-surface-variant/30">
+<th class="font-label-caps text-label-caps text-text-secondary py-3 px-4 uppercase">PO#</th>
+<th class="font-label-caps text-label-caps text-text-secondary py-3 px-4 uppercase">Vendor</th>
+<th class="font-label-caps text-label-caps text-text-secondary py-3 px-4 uppercase">Amount ₹</th>
+<th class="font-label-caps text-label-caps text-text-secondary py-3 px-4 uppercase">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-border-subtle hover:bg-surface-hover transition-colors h-table-row-height">
+<td class="px-4 py-3 font-data-mono text-data-mono text-text-primary">PO-2023-1045</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">TechCorp Solutions</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">45,000</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#22C55E20] text-[#22C55E]">Completed</span>
+</td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-hover transition-colors h-table-row-height">
+<td class="px-4 py-3 font-data-mono text-data-mono text-text-primary">PO-2023-1046</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">Global Logistics Inc.</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">1,25,000</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F59E0B20] text-[#F59E0B]">Pending</span>
+</td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-hover transition-colors h-table-row-height">
+<td class="px-4 py-3 font-data-mono text-data-mono text-text-primary">PO-2023-1047</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">Office Supplies Co.</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">12,500</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#22C55E20] text-[#22C55E]">Completed</span>
+</td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-surface-hover transition-colors h-table-row-height">
+<td class="px-4 py-3 font-data-mono text-data-mono text-text-primary">PO-2023-1048</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">Apex Manufacturing</td>
+<td class="px-4 py-3 font-body-sm text-body-sm text-text-primary">3,50,000</td>
+<td class="px-4 py-3">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EF444420] text-[#EF4444]">Delayed</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Section 3: Spending Trends Charts -->
+<div class="xl:col-span-4 flex flex-col gap-6">
+<div class="bg-surface border border-border-subtle rounded-DEFAULT p-6 shadow-[0_1px_3px_rgba(0,0,0,0.3)] flex-1 flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-text-primary mb-4">Spending Trends</h2>
+<div class="flex-1 flex flex-col gap-6">
+<!-- Placeholder for Donut Chart -->
+<div class="flex flex-col items-center justify-center py-4">
+<div class="w-32 h-32 rounded-full border-[16px] border-surface-variant relative flex items-center justify-center">
+<!-- CSS Hack for a basic donut look -->
+<div class="absolute inset-0 rounded-full border-[16px] border-secondary-container" style="clip-path: polygon(50% 0%, 100% 0, 100% 100%, 50% 100%);"></div>
+<div class="absolute inset-0 rounded-full border-[16px] border-primary-container" style="clip-path: polygon(0 0, 50% 0%, 50% 100%, 0 100%);"></div>
+<span class="font-headline-sm text-headline-sm text-text-primary">45%</span>
+</div>
+<div class="flex gap-4 mt-4 font-body-sm text-body-sm">
+<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary-container"></div> IT</div>
+<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary-container"></div> Operations</div>
+</div>
+</div>
+<hr class="border-border-subtle"/>
+<!-- Placeholder for Line Chart -->
+<div class="flex-1 flex flex-col justify-end pt-4 min-h-[150px] relative">
+<span class="font-label-caps text-label-caps text-text-secondary absolute top-2 left-0">Monthly Spend</span>
+<div class="flex items-end justify-between h-24 gap-2 mt-4">
+<div class="w-full bg-surface-variant rounded-t-sm h-[40%] hover:bg-secondary-container transition-colors relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-nav-top text-text-primary text-[10px] py-1 px-2 rounded hidden group-hover:block border border-border-subtle">Jan</div></div>
+<div class="w-full bg-surface-variant rounded-t-sm h-[60%] hover:bg-secondary-container transition-colors relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-nav-top text-text-primary text-[10px] py-1 px-2 rounded hidden group-hover:block border border-border-subtle">Feb</div></div>
+<div class="w-full bg-surface-variant rounded-t-sm h-[30%] hover:bg-secondary-container transition-colors relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-nav-top text-text-primary text-[10px] py-1 px-2 rounded hidden group-hover:block border border-border-subtle">Mar</div></div>
+<div class="w-full bg-surface-variant rounded-t-sm h-[80%] hover:bg-secondary-container transition-colors relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-nav-top text-text-primary text-[10px] py-1 px-2 rounded hidden group-hover:block border border-border-subtle">Apr</div></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[50%] relative group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-nav-top text-text-primary text-[10px] py-1 px-2 rounded hidden group-hover:block border border-border-subtle">May</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

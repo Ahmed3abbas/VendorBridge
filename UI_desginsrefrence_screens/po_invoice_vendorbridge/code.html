@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Purchase Order &amp; Invoice - VendorBridge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#33343b",
+                        "primary": "#4be277",
+                        "on-surface": "#e2e2eb",
+                        "tertiary-fixed": "#ffdad5",
+                        "text-secondary": "#9CA3AF",
+                        "secondary-container": "#0566d9",
+                        "border-subtle": "#2A2E3A",
+                        "on-primary-container": "#004b1e",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-low": "#191b22",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-primary-fixed": "#002109",
+                        "primary-container": "#22c55e",
+                        "accent-red": "#EF4444",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#373940",
+                        "surface-tint": "#4ae176",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-high": "#282a30",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-surface-variant": "#bccbb9",
+                        "tertiary-container": "#ff8b7c",
+                        "on-secondary-container": "#e6ecff",
+                        "on-error": "#690005",
+                        "background": "#111319",
+                        "on-tertiary": "#60130d",
+                        "tertiary-fixed-dim": "#ffb4a9",
+                        "surface-dim": "#111319",
+                        "print-white": "#FFFFFF",
+                        "inverse-surface": "#e2e2eb",
+                        "on-tertiary-fixed-variant": "#7f2a21",
+                        "on-tertiary-container": "#76231b",
+                        "accent-amber": "#F59E0B",
+                        "nav-top": "#141720",
+                        "inverse-on-surface": "#2e3037",
+                        "surface-container-highest": "#33343b",
+                        "surface-container": "#1e1f26",
+                        "on-primary": "#003915",
+                        "surface-hover": "#242836",
+                        "outline": "#869585",
+                        "primary-fixed-dim": "#4ae176",
+                        "on-background": "#e2e2eb",
+                        "tertiary": "#ffb5ab",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005321",
+                        "secondary": "#adc6ff",
+                        "accent-teal": "#14B8A6",
+                        "on-tertiary-fixed": "#410001",
+                        "surface": "#1A1D27",
+                        "text-primary": "#F1F3F5",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#6bff8f",
+                        "outline-variant": "#3d4a3d",
+                        "inverse-primary": "#006e2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "input-height": "40px",
+                        "sidebar-collapsed": "64px",
+                        "container-padding": "32px",
+                        "sidebar-width": "240px",
+                        "table-row-height": "48px",
+                        "top-nav-height": "56px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col z-40 bg-surface dark:bg-surface fixed left-0 top-0 h-full w-[240px] pt-[56px] border-r border-border-subtle shrink-0">
+<div class="px-base py-base flex-1 overflow-y-auto mt-4">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">storefront</span>
+<span>Vendors</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">request_quote</span>
+<span>RFQs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">description</span>
+<span>Quotations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">fact_check</span>
+<span>Approvals</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-hover text-primary border-l-4 border-primary font-semibold font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span>Purchase Orders</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">receipt</span>
+<span>Invoices</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">analytics</span>
+<span>Reports</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">history</span>
+<span>Activity</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="p-base border-t border-border-subtle mt-auto">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">settings</span>
+<span>Settings</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-hover transition-all font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-xl group-hover:text-primary transition-colors">help</span>
+<span>Support</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-[240px]">
+<!-- TopNavBar -->
+<header class="bg-nav-top dark:bg-nav-top fixed top-0 left-0 w-full z-50 flex justify-between items-center px-container-padding h-[56px] border-b border-border-subtle md:pl-[272px]">
+<div class="flex items-center gap-4">
+<span class="text-headline-sm font-headline-sm font-bold text-primary md:hidden">VendorBridge</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-lg">search</span>
+<input class="w-full bg-surface-variant text-on-surface border border-border-subtle rounded-md h-[32px] pl-9 pr-3 font-body-sm text-body-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-text-secondary transition-colors" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-hover transition-colors p-1.5 rounded-full flex items-center justify-center hover:scale-95 duration-100">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-hover transition-colors p-1.5 rounded-full flex items-center justify-center relative hover:scale-95 duration-100">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-accent-red rounded-full border border-nav-top"></span>
+</button>
+<button class="w-8 h-8 rounded-full overflow-hidden border border-border-subtle hover:scale-95 transition-transform duration-100 ml-2">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0XbxGivvaoI9fOjdomyM2WNEoLDRrzt59ymbtn5ttZYqbTxnyJME9WwtDFV82iZiIi79NlZ24jZvezpslTTYbQ5NixFRPtblk47RsncBWPyHMeoOm4K68WiTHGanxIKiQ_pXd62N-MjgzqeYMPzZB2xd7iTyhm1P2UJQCOLbfT9urB82ykY5ajcL-ETaOVFfVs50JtlznTBZJuE1sKCxImBS0j7dN2lim4DVyy_Y9hyqOrVmhSIpLEWhMITWrYObjxLA0s4lAtg6D"/>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto mt-[56px] bg-background p-container-padding flex justify-center">
+<div class="max-w-[900px] w-full flex flex-col gap-6">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-text-primary">Purchase Order &amp; Invoice</h1>
+<div class="flex items-center gap-3 mt-1">
+<span class="font-data-mono text-data-mono text-text-secondary">PO-2025-0068</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-accent-amber/20 text-accent-amber font-label-caps text-label-caps uppercase border border-accent-amber/30">
+                                Pending Payment
+                            </span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded bg-transparent border border-border-subtle text-text-primary hover:bg-surface-hover active:scale-[0.98] transition-all font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Download PDF
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded bg-transparent border border-border-subtle text-text-primary hover:bg-surface-hover active:scale-[0.98] transition-all font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">print</span>
+                            Print
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded bg-transparent border border-border-subtle text-text-primary hover:bg-surface-hover active:scale-[0.98] transition-all font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+                            Email
+                        </button>
+</div>
+</div>
+<!-- Document Card (Paper Mode styling) -->
+<div class="bg-print-white text-[#111827] rounded-lg shadow-sm border border-border-subtle overflow-hidden">
+<!-- Doc Header -->
+<div class="p-8 pb-6 border-b border-gray-200 flex justify-between items-start">
+<div>
+<div class="font-headline-md text-headline-md text-secondary-container mb-1">PURCHASE ORDER</div>
+<div class="font-data-mono text-data-mono text-gray-500">Date: Oct 24, 2025</div>
+</div>
+<div class="text-right">
+<div class="font-headline-sm text-headline-sm font-bold text-gray-900">VendorBridge Corp.</div>
+<div class="font-body-sm text-body-sm text-gray-600 mt-1">100 Tech Park, Suite 400<br/>San Francisco, CA 94105</div>
+</div>
+</div>
+<!-- Addresses -->
+<div class="grid grid-cols-2 gap-8 p-8 border-b border-gray-200">
+<div>
+<div class="font-label-caps text-label-caps text-gray-500 mb-2 uppercase tracking-wider">Bill To</div>
+<div class="font-body-md text-body-md font-semibold text-gray-900">Acme Corporation</div>
+<div class="font-body-sm text-body-sm text-gray-600 mt-1">
+                                450 Corporate Blvd<br/>
+                                Floor 12<br/>
+                                New York, NY 10001
+                            </div>
+<div class="font-data-mono text-data-mono text-gray-500 mt-3">GSTIN: 27AADCB2230M1Z2</div>
+</div>
+<div>
+<div class="font-label-caps text-label-caps text-gray-500 mb-2 uppercase tracking-wider">Vendor</div>
+<div class="font-body-md text-body-md font-semibold text-gray-900">Infra Supplies Ltd.</div>
+<div class="font-body-sm text-body-sm text-gray-600 mt-1">
+                                88 Industrial Parkway<br/>
+                                Warehouse District<br/>
+                                Chicago, IL 60607
+                            </div>
+<div class="font-data-mono text-data-mono text-gray-500 mt-3">GSTIN: 07AAGCI1240F1Z4</div>
+</div>
+</div>
+<!-- Reference Details -->
+<div class="p-8 py-6 border-b border-gray-200">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr>
+<th class="pb-2 text-gray-500 font-medium">Order Ref</th>
+<th class="pb-2 text-gray-500 font-medium">Payment Terms</th>
+<th class="pb-2 text-gray-500 font-medium">Delivery Date</th>
+<th class="pb-2 text-gray-500 font-medium">Shipping Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="font-data-mono text-gray-900">REQ-8992</td>
+<td class="text-gray-900">Net 30</td>
+<td class="text-gray-900">Nov 15, 2025</td>
+<td class="text-gray-900">Freight - Ground</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Line Items -->
+<div class="p-8">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-gray-300">
+<th class="py-3 font-label-caps text-label-caps text-gray-600 uppercase tracking-wider">Item / Description</th>
+<th class="py-3 font-label-caps text-label-caps text-gray-600 uppercase tracking-wider text-right">Qty</th>
+<th class="py-3 font-label-caps text-label-caps text-gray-600 uppercase tracking-wider text-right">Unit Price</th>
+<th class="py-3 font-label-caps text-label-caps text-gray-600 uppercase tracking-wider text-right">Amount</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<tr class="border-b border-gray-200">
+<td class="py-4">
+<div class="font-semibold text-gray-900">Ergonomic Task Chair</div>
+<div class="text-gray-500 mt-1">SKU: CHR-992A | Mesh back, adjustable lumbar</div>
+</td>
+<td class="py-4 text-right font-data-mono text-gray-900">12</td>
+<td class="py-4 text-right font-data-mono text-gray-900">$245.00</td>
+<td class="py-4 text-right font-data-mono text-gray-900">$2,940.00</td>
+</tr>
+<tr class="border-b border-gray-200">
+<td class="py-4">
+<div class="font-semibold text-gray-900">Motorized Standing Desk</div>
+<div class="text-gray-500 mt-1">SKU: DSK-M48 | 48" Bamboo top, dual motor</div>
+</td>
+<td class="py-4 text-right font-data-mono text-gray-900">8</td>
+<td class="py-4 text-right font-data-mono text-gray-900">$410.00</td>
+<td class="py-4 text-right font-data-mono text-gray-900">$3,280.00</td>
+</tr>
+</tbody>
+</table>
+<!-- Totals -->
+<div class="mt-8 flex justify-end">
+<div class="w-64">
+<div class="flex justify-between py-2 font-body-sm text-body-sm text-gray-600">
+<span>Subtotal</span>
+<span class="font-data-mono text-gray-900">$6,220.00</span>
+</div>
+<div class="flex justify-between py-2 font-body-sm text-body-sm text-gray-600 border-t border-gray-100">
+<span>CGST (9%)</span>
+<span class="font-data-mono text-gray-900">$559.80</span>
+</div>
+<div class="flex justify-between py-2 font-body-sm text-body-sm text-gray-600 border-t border-gray-100">
+<span>SGST (9%)</span>
+<span class="font-data-mono text-gray-900">$559.80</span>
+</div>
+<div class="flex justify-between py-3 mt-2 border-t-2 border-gray-800 font-headline-sm text-headline-sm font-bold text-gray-900">
+<span>Grand Total</span>
+<span class="font-data-mono">$7,339.60</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="flex justify-between items-center bg-surface p-6 rounded-lg border border-border-subtle mt-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-accent-amber">info</span>
+<span class="font-body-sm text-body-sm text-text-secondary">This invoice is currently pending payment. Due by Nov 24, 2025.</span>
+</div>
+<button class="bg-primary-container text-[#0F1117] font-body-md text-body-md font-semibold px-6 py-2 rounded hover:scale-[0.98] transition-transform flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Mark as Paid
+                    </button>
+</div>
+</div>
+</main>
+</div>
+</body></html>
