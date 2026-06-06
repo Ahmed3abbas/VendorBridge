@@ -17,14 +17,15 @@ const invoiceIncludes = {
   },
 };
 
-export const generateInvoice = async ({ poId, taxRate = 18 }) => {
+export const generateInvoice = async ({ poId, po_id, taxRate = 18 }) => {
+  const resolvedPoId = poId ?? po_id;
   const po = await db.purchaseOrder.findUnique({
-    where: { id: poId },
+    where: { id: resolvedPoId },
     include: { quotation: { include: { items: true } }, vendor: true },
   });
   if (!po) throw new AppError('Purchase order not found', 404, 'NOT_FOUND');
 
-  const existing = await db.invoice.findFirst({ where: { po_id: poId } });
+  const existing = await db.invoice.findFirst({ where: { po_id: resolvedPoId } });
   if (existing) throw new AppError('Invoice already exists for this PO', 400, 'DUPLICATE');
 
   const subtotal = po.quotation.items.reduce((sum, i) => sum + i.subtotal, 0);
@@ -34,7 +35,7 @@ export const generateInvoice = async ({ poId, taxRate = 18 }) => {
   return db.invoice.create({
     data: {
       invoice_number,
-      po_id: poId,
+      po_id: resolvedPoId,
       subtotal,
       tax_rate: taxRate,
       tax_amount,

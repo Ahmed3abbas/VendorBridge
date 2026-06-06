@@ -18,34 +18,31 @@ const parseRFQFormData = (req, res, next) => {
     // Parse items array from JSON string
     if (req.body.items && typeof req.body.items === 'string') {
       req.body.items = JSON.parse(req.body.items);
-      
-      // Convert quantity to number for each item
+    }
+    if (Array.isArray(req.body.items)) {
       req.body.items = req.body.items.map(item => ({
         ...item,
-        quantity: parseFloat(item.quantity) || 0
+        quantity: parseFloat(item.quantity) || 0,
       }));
     }
-    
-    // Parse vendor_ids array from JSON string and rename to vendorIds
-    if (req.body.vendor_ids && typeof req.body.vendor_ids === 'string') {
-      req.body.vendorIds = JSON.parse(req.body.vendor_ids);
+
+    // Parse vendor_ids → vendorIds (handle both JSON string and plain array)
+    const raw = req.body.vendor_ids;
+    if (raw) {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      req.body.vendorIds = Array.isArray(parsed) ? parsed : [parsed];
       delete req.body.vendor_ids;
     }
-    
-    // Ensure deadline is in proper format
+
+    // Normalise deadline to ISO string
     if (req.body.deadline) {
-      // datetime-local gives format like "2024-12-25T14:30"
-      // Convert to ISO string if not already
-      const deadlineDate = new Date(req.body.deadline);
-      if (!isNaN(deadlineDate.getTime())) {
-        req.body.deadline = deadlineDate.toISOString();
-      }
+      const d = new Date(req.body.deadline);
+      if (!isNaN(d.getTime())) req.body.deadline = d.toISOString();
     }
-    
+
     next();
   } catch (error) {
-    // If parsing fails, let validation catch the error
-    next();
+    next(error);
   }
 };
 

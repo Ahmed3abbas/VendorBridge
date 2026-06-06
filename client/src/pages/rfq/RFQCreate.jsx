@@ -12,7 +12,7 @@ import Input from '../../components/ui/Input';
 import Textarea from '../../components/ui/Textarea';
 import { Card } from '../../components/ui/Card';
 
-const STEPS = ['Details', 'Items', 'Vendors', 'Review'];
+const STEPS = ['Details', 'Items', 'Vendors', 'Documents', 'Review'];
 
 const schema = z.object({
   title: z.string().min(3, 'Title required'),
@@ -50,6 +50,7 @@ export default function RFQCreate() {
       ['title', 'deadline'],
       ['items'],
       ['vendor_ids'],
+      [], // Documents step — optional, no validation needed
     ];
     const valid = await trigger(fieldsByStep[step]);
     if (valid) setStep(s => s + 1);
@@ -60,7 +61,7 @@ export default function RFQCreate() {
     setValue('vendor_ids', current.includes(id) ? current.filter(v => v !== id) : [...current, id]);
   }
 
-  function onSubmit(data) {
+  function buildAndSubmit(data) {
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('description', data.description ?? '');
@@ -69,6 +70,11 @@ export default function RFQCreate() {
     formData.append('vendor_ids', JSON.stringify(data.vendor_ids));
     files.forEach(f => formData.append('attachments', f));
     createRFQ(formData, { onSuccess: rfq => navigate(`/rfq/${rfq.id}`) });
+  }
+
+  function handleFinalSubmit(e) {
+    e.preventDefault();
+    handleSubmit(buildAndSubmit)();
   }
 
   const filteredVendors = vendors.filter(v =>
@@ -84,7 +90,7 @@ export default function RFQCreate() {
 
       <StepperProgress steps={STEPS} current={step} />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <Card>
           {/* Step 0: Details */}
           {step === 0 && (
@@ -160,8 +166,22 @@ export default function RFQCreate() {
             </div>
           )}
 
-          {/* Step 3: Review */}
+          {/* Step 3: Documents (optional) */}
           {step === 3 && (
+            <div className="flex flex-col gap-4">
+              <div>
+                <h2 className="text-headline-sm text-text-primary mb-1">Supporting Documents</h2>
+                <p className="text-[12px] text-text-secondary">Optional — attach specs, drawings, or reference files. You can skip this step.</p>
+              </div>
+              <FileUpload onChange={setFiles} label="Drag & drop or click to attach files" />
+              {files.length === 0 && (
+                <p className="text-[11px] text-text-secondary italic">No documents attached — that's fine, you can proceed.</p>
+              )}
+            </div>
+          )}
+
+          {/* Step 4: Review */}
+          {step === 4 && (
             <div className="flex flex-col gap-4">
               <h2 className="text-headline-sm text-text-primary mb-2">Review & Submit</h2>
               <dl className="flex flex-col gap-2 bg-surface-variant/30 rounded p-4">
@@ -169,16 +189,32 @@ export default function RFQCreate() {
                 <div className="flex justify-between"><dt className="text-text-secondary text-body-sm">Items</dt><dd className="text-text-primary font-semibold text-body-sm">{watchItems.length}</dd></div>
                 <div className="flex justify-between"><dt className="text-text-secondary text-body-sm">Vendors</dt><dd className="text-text-primary font-semibold text-body-sm">{watchVendorIds?.length}</dd></div>
                 <div className="flex justify-between"><dt className="text-text-secondary text-body-sm">Deadline</dt><dd className="text-text-primary font-semibold text-body-sm">{watch('deadline')}</dd></div>
+                <div className="flex justify-between items-start">
+                  <dt className="text-text-secondary text-body-sm">Documents</dt>
+                  <dd className="text-right">
+                    {files.length === 0 ? (
+                      <span className="text-[11px] text-text-secondary italic">None attached</span>
+                    ) : (
+                      <ul className="flex flex-col gap-0.5">
+                        {files.map((f, i) => (
+                          <li key={i} className="text-[11px] text-text-primary flex items-center gap-1 justify-end">
+                            <span className="material-symbols-outlined text-[13px]">attach_file</span>
+                            {f.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </dd>
+                </div>
               </dl>
-              <FileUpload onChange={setFiles} label="Attach supporting documents (optional)" />
             </div>
           )}
 
           <div className="flex gap-3 justify-between mt-6 pt-4 border-t border-border-subtle">
             <Button type="button" variant="outline" onClick={() => setStep(s => s - 1)} disabled={step === 0}>Back</Button>
-            {step < 3
-              ? <Button type="button" onClick={nextStep}>Next</Button>
-              : <Button type="submit" loading={isPending} icon="send">Submit RFQ</Button>
+            {step < 4
+              ? <Button type="button" onClick={nextStep}>{step === 3 ? (files.length > 0 ? 'Next' : 'Skip & Review') : 'Next'}</Button>
+              : <Button type="button" onClick={handleFinalSubmit} loading={isPending} icon="send">Submit RFQ</Button>
             }
           </div>
         </Card>

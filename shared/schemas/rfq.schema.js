@@ -16,5 +16,5 @@ export const rfqSchema = z.object({
     return !isNaN(date.getTime()) && date > new Date();
   }, { message: 'Deadline must be a valid future date' }),
   items: z.array(rfqItemSchema).min(1, 'At least one item is required'),
-  vendorIds: z.array(z.string().uuid('Invalid vendor ID')).min(1, 'At least one vendor must be selected'),
+  vendorIds: z.array(z.string().cuid('Invalid vendor ID')).min(1, 'At least one vendor must be selected'),
 });

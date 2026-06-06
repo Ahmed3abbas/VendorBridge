@@ -83,12 +83,24 @@ export async function listRFQs(user, { status, page = 1, limit = 20 }) {
   return { rfqs: transformedRfqs, total, page: parseInt(page), pages: Math.ceil(total / limit) };
 }
 
-export async function createRFQ({ title, description, deadline, items, vendorIds }, userId) {
+export async function createRFQ({ title, description, deadline, items, vendorIds }, userId, files = []) {
   const rfq = await db.rfq.create({
     data: {
       title, description, deadline: new Date(deadline), created_by: userId,
       items: { create: items },
       rfq_vendors: { create: vendorIds.map((vendor_id) => ({ vendor_id })) },
+      ...(files.length > 0 && {
+        attachments: {
+          create: files.map(f => ({
+            entity_type: 'RFQ',
+            file_name: f.originalname,
+            file_path: `/uploads/${f.filename}`,
+            mime_type: f.mimetype,
+            file_size: f.size,
+            uploaded_by: userId,
+          })),
+        },
+      }),
     },
     include: rfqInclude,
   });

@@ -76,6 +76,32 @@ export default function RFQDetail() {
         </Card>
       )}
 
+      {rfq.attachments?.length > 0 && (
+        <Card>
+          <h3 className="text-headline-sm text-text-primary mb-3">Attachments</h3>
+          <ul className="flex flex-col gap-2">
+            {rfq.attachments.map(a => (
+              <li key={a.id} className="flex items-center justify-between bg-surface-variant/30 rounded px-3 py-2">
+                <span className="flex items-center gap-2 text-body-sm text-text-primary truncate">
+                  <span className="material-symbols-outlined text-[16px] text-secondary-container">attach_file</span>
+                  {a.file_name}
+                  <span className="text-[11px] text-text-secondary">({(a.file_size / 1024).toFixed(1)} KB)</span>
+                </span>
+                <a
+                  href={a.file_path}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[12px] text-secondary-container hover:underline ml-4 shrink-0 flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-[14px]">download</span>
+                  Download
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
+
       <Card className="p-0">
         <div className="px-6 py-4 border-b border-border-subtle">
           <h3 className="text-headline-sm text-text-primary">Line Items</h3>

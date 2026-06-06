@@ -8,7 +8,7 @@ export const list = asyncHandler(async (req, res) => {
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const rfq = await rfqService.createRFQ(req.body, req.user.id);
+  const rfq = await rfqService.createRFQ(req.body, req.user.id, req.files ?? []);
   successResponse(res, rfq, 'RFQ created', 201);
 });
 
