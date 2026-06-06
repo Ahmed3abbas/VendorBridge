@@ -9,7 +9,6 @@ export async function generatePDF(templateName, data) {
   const templatePath = join(__dirname, '../templates', templateName);
   let html = readFileSync(templatePath, 'utf-8');
 
-  // Replace {{key}} placeholders with data values
   for (const [key, value] of Object.entries(data)) {
     html = html.replaceAll(`{{${key}}}`, value ?? '');
   }

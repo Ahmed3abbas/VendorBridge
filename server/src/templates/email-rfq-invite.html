@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #f3f4f6; padding: 24px; }
+    .card { background: white; max-width: 560px; margin: auto; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .top-bar { background: #2563eb; padding: 20px 28px; }
+    .top-bar h1 { color: white; font-size: 18px; margin: 0; }
+    .body { padding: 28px; color: #374151; line-height: 1.6; }
+    .detail-row { margin: 6px 0; }
+    .label { font-weight: bold; color: #1d4ed8; }
+    .cta { display: inline-block; margin-top: 24px; background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+    .footer { padding: 16px 28px; background: #f9fafb; font-size: 11px; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-bar"><h1>VendorBridge — Quotation Invitation</h1></div>
+    <div class="body">
+      <p>Dear <strong>{{vendorName}}</strong>,</p>
+      <p>You have been invited to submit a quotation for the following RFQ:</p>
+      <div class="detail-row"><span class="label">RFQ Title:</span> {{rfqTitle}}</div>
+      <div class="detail-row"><span class="label">Deadline:</span> {{deadline}}</div>
+      <div class="detail-row"><span class="label">Description:</span> {{rfqDescription}}</div>
+      <a href="{{appUrl}}/rfq/{{rfqId}}" class="cta">View RFQ &amp; Submit Quote</a>
+    </div>
+    <div class="footer">This is an automated message from VendorBridge. Do not reply directly to this email.</div>
+  </div>
+</body>
+</html>
