@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Browser Cache - VendorBridge</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1d27;
+            color: #f1f3f5;
+        }
+        .box {
+            background: #2a2e3a;
+            border: 1px solid #3a3e4a;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        h1 { color: #00d4aa; margin-top: 0; }
+        h2 { color: #7c7cff; }
+        .step {
+            background: #1a1d27;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #00d4aa;
+            border-radius: 4px;
+        }
+        .warning {
+            background: #3a2a1a;
+            border-left-color: #ff9800;
+            color: #ffb74d;
+        }
+        button {
+            background: #7c7cff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #6b6bef;
+        }
+        .danger {
+            background: #ef4444;
+        }
+        .danger:hover {
+            background: #dc2626;
+        }
+        code {
+            background: #1a1d27;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00d4aa;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .success {
+            background: #166534;
+            border: 1px solid #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🚨 Clear Browser Cache for VendorBridge</h1>
+        <p>Your browser is serving OLD cached JavaScript files. Follow these steps EXACTLY:</p>
+    </div>
+
+    <div class="box">
+        <h2>Method 1: Hard Refresh (Try This First)</h2>
+        <div class="step">
+            <h3>Step 1: Make sure dev server is running</h3>
+            <p>Check your terminal shows:</p>
+            <code>VITE v5.4.7  ready in XXX ms</code>
+        </div>
+        
+        <div class="step">
+            <h3>Step 2: Hard Refresh</h3>
+            <p>In the VendorBridge tab, press:</p>
+            <ul>
+                <li><strong>Chrome/Edge:</strong> <code>Ctrl + Shift + R</code></li>
+                <li><strong>Firefox:</strong> <code>Ctrl + Shift + R</code> or <code>Shift + F5</code></li>
+                <li><strong>Alternative:</strong> <code>Ctrl + F5</code></li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Check Console</h3>
+            <p>Press <code>F12</code>, go to Console tab. You should see:</p>
+            <code>[vite] connecting...</code><br>
+            <code>[vite] connected.</code>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>Method 2: Clear All Browser Data</h2>
+        
+        <div class="step">
+            <h3>Chrome/Edge Instructions:</h3>
+            <ol>
+                <li>Press <code>Ctrl + Shift + Delete</code></li>
+                <li>Select "All time" in time range</li>
+                <li>Check ONLY "Cached images and files"</li>
+                <li>Click "Clear data"</li>
+                <li>Go to <code>http://localhost:3000/login</code></li>
+                <li>Press <code>Ctrl + Shift + R</code></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Firefox Instructions:</h3>
+            <ol>
+                <li>Press <code>Ctrl + Shift + Delete</code></li>
+                <li>Select "Everything" in time range</li>
+                <li>Check ONLY "Cache"</li>
+                <li>Click "OK"</li>
+                <li>Go to <code>http://localhost:3000/login</code></li>
+                <li>Press <code>Ctrl + Shift + R</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>Method 3: Incognito/Private Window (Guaranteed Fresh)</h2>
+        <div class="step">
+            <h3>Open New Private Window:</h3>
+            <ul>
+                <li><strong>Chrome/Edge:</strong> <code>Ctrl + Shift + N</code></li>
+                <li><strong>Firefox:</strong> <code>Ctrl + Shift + P</code></li>
+            </ul>
+            <p>Then navigate to: <code>http://localhost:3000/login</code></p>
+        </div>
+
+        <button onclick="window.open('http://localhost:3000/login', '_blank')">
+            Open Login Page in New Tab
+        </button>
+    </div>
+
+    <div class="box warning">
+        <h2>⚠️ Nuclear Option: Clear Everything</h2>
+        <p>If nothing above works, you may need to:</p>
+        
+        <div class="step">
+            <h3>Option A: Close Browser Completely</h3>
+            <ol>
+                <li>Close ALL browser windows (not just the tab)</li>
+                <li>Wait 5 seconds</li>
+                <li>Reopen browser</li>
+                <li>Go directly to <code>http://localhost:3000/login</code></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Option B: Use Different Browser</h3>
+            <p>If you're using Chrome, try:</p>
+            <ul>
+                <li>Firefox</li>
+                <li>Edge</li>
+                <li>Brave</li>
+            </ul>
+            <p>This will prove if it's a caching issue.</p>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>✅ How to Verify It's Fixed</h2>
+        <div class="step">
+            <p>After clearing cache, the browser console should show:</p>
+            <code style="color: #22c55e;">[vite] connecting...</code><br>
+            <code style="color: #22c55e;">[vite] connected.</code>
+            
+            <p style="margin-top: 15px;">And should NOT show:</p>
+            <code style="color: #ef4444;">Warning: Function components cannot be given refs</code><br>
+            <code style="color: #ef4444;">Invalid hook call</code><br>
+            <code style="color: #ef4444;">WebSocket connection failed</code>
+        </div>
+    </div>
+
+    <div class="box">
+        <h2>🔍 Why This Is Happening</h2>
+        <p>Your browser cached the OLD Input.jsx component before it had <code>forwardRef</code>.</p>
+        <p>Even though the file is NOW correct on disk, the browser is loading the old cached version from memory.</p>
+        <p>A hard refresh forces the browser to download fresh JavaScript files.</p>
+    </div>
+
+    <div class="box" style="text-align: center;">
+        <h2>Quick Actions</h2>
+        <button onclick="alert('1. Press Ctrl+Shift+R in the VendorBridge tab\n2. Check console (F12)\n3. Should see: [vite] connected')">
+            Show Hard Refresh Instructions
+        </button>
+        <button onclick="window.open('http://localhost:3000/login', '_blank')">
+            Open Login Page
+        </button>
+        <button class="danger" onclick="alert('1. Close ALL browser windows\n2. Wait 5 seconds\n3. Reopen browser\n4. Go to http://localhost:3000/login')">
+            Nuclear Option Instructions
+        </button>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        // Test if localhost:3000 is reachable
+        fetch('http://localhost:3000/')
+            .then(response => {
+                const statusDiv = document.getElementById('status');
+                statusDiv.className = 'success';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = '✅ Dev server is running! Proceed with cache clearing steps above.';
+            })
+            .catch(error => {
+                const statusDiv = document.getElementById('status');
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#7f1d1d';
+                statusDiv.style.border = '1px solid #ef4444';
+                statusDiv.innerHTML = '❌ Dev server is NOT running! Run <code>npm run dev</code> first.';
+            });
+    </script>
+</body>
+</html>

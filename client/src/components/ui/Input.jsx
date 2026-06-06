@@ -1,6 +1,7 @@
+import { forwardRef } from 'react';
 import { cn } from '../../utils/cn';
 
-export default function Input({ className, label, error, icon, ...props }) {
+const Input = forwardRef(({ className, label, error, icon, ...props }, ref) => {
   return (
     <div className="flex flex-col gap-1">
       {label && <label className="text-label-caps text-text-secondary uppercase">{label}</label>}
@@ -11,6 +12,7 @@ export default function Input({ className, label, error, icon, ...props }) {
           </span>
         )}
         <input
+          ref={ref}
           className={cn(
             'w-full bg-surface-variant/50 border border-border-subtle rounded h-[40px] px-3 text-body-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:border-secondary-container focus:ring-1 focus:ring-secondary-container transition-colors',
             icon && 'pl-9',
@@ -23,4 +25,8 @@ export default function Input({ className, label, error, icon, ...props }) {
       {error && <p className="text-[11px] text-accent-red">{error}</p>}
     </div>
   );
-}
+});
+
+Input.displayName = 'Input';
+
+export default Input;
