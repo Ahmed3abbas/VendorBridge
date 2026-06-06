@@ -1,11 +1,19 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLogin } from '../../hooks/useAuth';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+
+const DEMO_USERS = [
+  { role: 'Admin',              email: 'admin@demo.com',    password: 'Demo@1234' },
+  { role: 'Procurement Officer',email: 'officer@demo.com',  password: 'Demo@1234' },
+  { role: 'Manager',            email: 'manager@demo.com',  password: 'Demo@1234' },
+  { role: 'Vendor 1',           email: 'vendor1@demo.com',  password: 'Demo@1234' },
+  { role: 'Vendor 2',           email: 'vendor2@demo.com',  password: 'Demo@1234' },
+];
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -14,8 +22,13 @@ const schema = z.object({
 
 export default function Login() {
   const [showPass, setShowPass] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(schema), mode: 'onTouched' });
   const { mutate: login, isPending } = useLogin();
+
+  function fillDemo(user) {
+    setValue('email', user.email, { shouldValidate: true });
+    setValue('password', user.password, { shouldValidate: true });
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -26,6 +39,33 @@ export default function Login() {
             <span className="text-headline-lg text-text-primary font-bold">VendorBridge</span>
           </div>
           <p className="text-body-md text-text-secondary">Sign in to your account</p>
+        </div>
+
+        {/* Demo accounts quick-fill - Always Visible Dropdown */}
+        <div className="mb-4">
+          <label className="block text-label-caps text-text-secondary uppercase mb-2">
+            Quick Login (Demo Accounts)
+          </label>
+          <div className="relative">
+            <select
+              onChange={(e) => {
+                const user = DEMO_USERS.find(u => u.email === e.target.value);
+                if (user) fillDemo(user);
+              }}
+              className="w-full appearance-none bg-surface border border-border-subtle rounded-lg px-4 py-2.5 pr-10 text-body-sm text-text-primary hover:bg-surface-hover transition-colors cursor-pointer focus:outline-none focus:border-secondary-container"
+              defaultValue=""
+            >
+              <option value="" disabled>Select a demo account to auto-fill...</option>
+              {DEMO_USERS.map(u => (
+                <option key={u.email} value={u.email}>
+                  {u.role} - {u.email} (Demo@1234)
+                </option>
+              ))}
+            </select>
+            <span className="material-symbols-outlined text-[20px] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-secondary">
+              expand_more
+            </span>
+          </div>
         </div>
         <div className="bg-surface border border-border-subtle rounded-lg p-8">
           <form onSubmit={handleSubmit((d) => login(d))} className="flex flex-col gap-5">

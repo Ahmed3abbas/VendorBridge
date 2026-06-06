@@ -23,7 +23,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function Register() {
-  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, formState: { errors } } = useForm({ resolver: zodResolver(schema), mode: 'onTouched' });
   const { mutate: doRegister, isPending } = useRegister();
 
   return (

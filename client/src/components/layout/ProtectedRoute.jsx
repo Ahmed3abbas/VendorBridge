@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Outlet } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 
 export default function ProtectedRoute({ children, roles }) {
@@ -13,5 +13,6 @@ export default function ProtectedRoute({ children, roles }) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return children;
+  // If used as a layout route (no children), render Outlet
+  return children ?? <Outlet />;
 }

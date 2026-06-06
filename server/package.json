@@ -9,7 +9,9 @@
     "start": "node src/server.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --forceExit",
     "lint": "eslint src --ext .js",
-    "format": "prettier --write src"
+    "format": "prettier --write src",
+    "seed": "node prisma/seed.js",
+    "check-seed": "node prisma/check-and-seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.14.0",
