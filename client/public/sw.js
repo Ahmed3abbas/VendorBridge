@@ -15,6 +15,8 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const { request } = e;
+  // Ignore non-http(s) requests (chrome-extension, etc.)
+  if (!request.url.startsWith('http')) return;
   const url = new URL(request.url);
 
   // Cache-first for static assets
