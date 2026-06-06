@@ -48,7 +48,22 @@ export default function QuoteSubmit() {
   const total = watchItems.reduce((sum, item) => sum + (Number(item.unit_price) || 0) * Number(item.quantity || 0), 0);
 
   function onSubmit(data) {
-    submit({ rfqId, data }, { onSuccess: () => navigate('/rfq') });
+    // Transform data to match backend expectations
+    const transformedData = {
+      items: data.items.map(item => ({
+        rfq_item_id: item.rfq_item_id,
+        unit_price: parseFloat(item.unit_price),
+        quantity: parseFloat(item.quantity),
+        subtotal: parseFloat(item.unit_price) * parseFloat(item.quantity),
+      })),
+      total_amount: data.items.reduce((sum, item) => 
+        sum + (parseFloat(item.unit_price) || 0) * parseFloat(item.quantity || 0), 0
+      ),
+      delivery_date: new Date(data.delivery_date).toISOString(),
+      notes: data.notes || '',
+    };
+    
+    submit({ rfqId, data: transformedData }, { onSuccess: () => navigate('/rfq') });
   }
 
   if (isLoading) return <CardSkeleton />;

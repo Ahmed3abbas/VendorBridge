@@ -74,8 +74,8 @@ export default function Invoices() {
                     className={selectedId === inv.id ? 'bg-surface-hover/50' : ''}>
                     <Td className="font-mono-data text-secondary-container">{inv.invoice_number}</Td>
                     <Td className="font-mono-data text-text-secondary">{inv.purchase_order?.po_number}</Td>
-                    <Td className="font-semibold">{inv.purchase_order?.vendor?.name ?? inv.vendor?.name}</Td>
-                    <Td className="font-mono-data">{formatCurrency(inv.total ?? inv.total_amount)}</Td>
+                    <Td className="font-semibold">{inv.purchase_order?.vendor?.name}</Td>
+                    <Td className="font-mono-data">{formatCurrency(inv.total)}</Td>
                     <Td><StatusBadge status={inv.status} /></Td>
                   </Tr>
                 ))}
@@ -95,7 +95,7 @@ export default function Invoices() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="font-mono-data text-secondary-container text-headline-sm">{invoice.invoice_number}</p>
-                    <p className="text-body-sm text-text-secondary">{invoice.vendor?.name}</p>
+                    <p className="text-body-sm text-text-secondary">{invoice.purchase_order?.vendor?.name}</p>
                   </div>
                   <StatusBadge status={invoice.status} />
                 </div>
@@ -105,7 +105,7 @@ export default function Invoices() {
                     ['PO Number', invoice.purchase_order?.po_number],
                     ['Subtotal', formatCurrency(invoice.subtotal)],
                     ['GST (18%)', formatCurrency(invoice.tax_amount)],
-                    ['Total', formatCurrency(invoice.total ?? invoice.total_amount)],
+                    ['Total', formatCurrency(invoice.total)],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between">
                       <dt className="text-text-secondary">{label}</dt>
