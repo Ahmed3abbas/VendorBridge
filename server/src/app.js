@@ -26,6 +26,8 @@ app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
 // M1 routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vendors', vendorRoutes);
@@ -38,8 +40,6 @@ app.use('/api/purchase-orders', poRoutes);
 app.use('/api/invoices', invoicesRoutes);
 app.use('/api/activity-logs', activityLogsRoutes);
 app.use('/api/reports', reportsRoutes);
-
-app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.use(errorHandler);
 
