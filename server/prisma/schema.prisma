@@ -20,16 +20,15 @@ enum VendorStatus {
   BLACKLISTED
 }
 
-enum RFQStatus {
-  DRAFT
+enum RfqStatus {
   OPEN
   CLOSED
   CANCELLED
 }
 
 enum QuotationStatus {
+  DRAFT
   SUBMITTED
-  UNDER_REVIEW
   SELECTED
   REJECTED
 }
@@ -55,200 +54,210 @@ enum InvoiceStatus {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(PROCUREMENT_OFFICER)
-  vendorId     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password_hash String
+  name          String
+  role          Role      @default(PROCUREMENT_OFFICER)
+  is_active     Boolean   @default(true)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
-  vendor       Vendor?       @relation(fields: [vendorId], references: [id])
-  rfqs         RFQ[]
-  approvals    Approval[]
-  activityLogs ActivityLog[]
+  rfqs          Rfq[]
+  approvals     Approval[]
+  activity_logs ActivityLog[]
+  attachments   Attachment[]
+  vendor        Vendor?
 
   @@map("users")
 }
 
 model Vendor {
-  id           String       @id @default(cuid())
-  name         String
-  email        String       @unique
-  phone        String?
-  address      String?
-  gstNumber    String?
-  category     String?
-  status       VendorStatus @default(ACTIVE)
-  rating       Float        @default(0)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  name          String
+  gst_number    String       @unique
+  category      String
+  status        VendorStatus @default(ACTIVE)
+  rating        Float?       @default(0)
+  contact_email String
+  contact_phone String
+  address       String?
+  user_id       String?      @unique
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
 
-  users           User[]
-  rfqVendors      RFQVendor[]
-  quotations      Quotation[]
-  purchaseOrders  PurchaseOrder[]
-  invoices        Invoice[]
+  user          User?        @relation(fields: [user_id], references: [id])
+  rfq_vendors   RfqVendor[]
+  quotations    Quotation[]
+  purchase_orders PurchaseOrder[]
 
   @@map("vendors")
 }
 
-model RFQ {
+model Rfq {
   id          String    @id @default(cuid())
   title       String
   description String?
-  status      RFQStatus @default(DRAFT)
   deadline    DateTime
-  createdById String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  status      RfqStatus @default(OPEN)
+  created_by  String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
-  createdBy  User        @relation(fields: [createdById], references: [id])
-  items      RFQItem[]
-  rfqVendors RFQVendor[]
-  quotations Quotation[]
+  creator     User        @relation(fields: [created_by], references: [id])
+  items       RfqItem[]
+  rfq_vendors RfqVendor[]
+  quotations  Quotation[]
+  attachments Attachment[]
 
   @@map("rfqs")
 }
 
-model RFQItem {
-  id          String  @id @default(cuid())
-  rfqId       String
-  description String
-  quantity    Float
-  unit        String?
+model RfqItem {
+  id           String  @id @default(cuid())
+  rfq_id       String
+  product_name String
+  quantity     Float
+  unit         String
+  description  String?
 
-  rfq        RFQ             @relation(fields: [rfqId], references: [id], onDelete: Cascade)
-  quoteItems QuotationItem[]
+  rfq             Rfq             @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  quotation_items QuotationItem[]
 
   @@map("rfq_items")
 }
 
-model RFQVendor {
-  id       String   @id @default(cuid())
-  rfqId    String
-  vendorId String
-  invitedAt DateTime @default(now())
+model RfqVendor {
+  id         String   @id @default(cuid())
+  rfq_id     String
+  vendor_id  String
+  invited_at DateTime @default(now())
 
-  rfq    RFQ    @relation(fields: [rfqId], references: [id], onDelete: Cascade)
-  vendor Vendor @relation(fields: [vendorId], references: [id])
+  rfq    Rfq    @relation(fields: [rfq_id], references: [id], onDelete: Cascade)
+  vendor Vendor @relation(fields: [vendor_id], references: [id])
 
-  @@unique([rfqId, vendorId])
+  @@unique([rfq_id, vendor_id])
   @@map("rfq_vendors")
 }
 
 model Quotation {
-  id        String          @id @default(cuid())
-  rfqId     String
-  vendorId  String
-  status    QuotationStatus @default(SUBMITTED)
-  notes     String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id            String          @id @default(cuid())
+  rfq_id        String
+  vendor_id     String
+  total_amount  Float
+  delivery_date DateTime
+  notes         String?
+  status        QuotationStatus @default(DRAFT)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
 
-  rfq           RFQ             @relation(fields: [rfqId], references: [id])
-  vendor        Vendor          @relation(fields: [vendorId], references: [id])
-  items         QuotationItem[]
-  approval      Approval?
-  purchaseOrder PurchaseOrder?
+  rfq    Rfq    @relation(fields: [rfq_id], references: [id])
+  vendor Vendor @relation(fields: [vendor_id], references: [id])
 
-  @@unique([rfqId, vendorId])
+  items    QuotationItem[]
+  approval Approval?
+  purchase_order PurchaseOrder?
+
+  @@unique([rfq_id, vendor_id])
   @@map("quotations")
 }
 
 model QuotationItem {
   id          String @id @default(cuid())
-  quotationId String
-  rfqItemId   String
-  unitPrice   Float
-  quantity    Float
-  subtotal    Float
+  quotation_id String
+  rfq_item_id  String
+  unit_price   Float
+  quantity     Float
+  subtotal     Float
 
-  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
-  rfqItem   RFQItem   @relation(fields: [rfqItemId], references: [id])
+  quotation Quotation @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
+  rfq_item  RfqItem   @relation(fields: [rfq_item_id], references: [id])
 
   @@map("quotation_items")
 }
 
 model Approval {
-  id          String         @id @default(cuid())
-  quotationId String         @unique
-  status      ApprovalStatus @default(PENDING)
-  remarks     String?
-  actedById   String?
-  actedAt     DateTime?
-  createdAt   DateTime       @default(now())
+  id           String         @id @default(cuid())
+  quotation_id String         @unique
+  approver_id  String
+  status       ApprovalStatus @default(PENDING)
+  remarks      String?
+  acted_at     DateTime?
+  created_at   DateTime       @default(now())
 
-  quotation Quotation @relation(fields: [quotationId], references: [id])
-  actedBy   User?     @relation(fields: [actedById], references: [id])
+  quotation Quotation @relation(fields: [quotation_id], references: [id])
+  approver  User      @relation(fields: [approver_id], references: [id])
 
   @@map("approvals")
 }
 
 model PurchaseOrder {
-  id          String   @id @default(cuid())
-  poNumber    String   @unique
-  quotationId String   @unique
-  vendorId    String
-  subtotal    Float
-  taxRate     Float    @default(18)
-  taxAmount   Float
-  total       Float
-  status      POStatus @default(ISSUED)
-  issuedAt    DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  po_number    String   @unique
+  quotation_id String   @unique
+  vendor_id    String
+  status       POStatus @default(ISSUED)
+  total_amount Float
+  tax_amount   Float
+  tax_rate     Float    @default(18)
+  issued_at    DateTime @default(now())
+  updated_at   DateTime @updatedAt
 
-  quotation Quotation @relation(fields: [quotationId], references: [id])
-  vendor    Vendor    @relation(fields: [vendorId], references: [id])
-  invoices  Invoice[]
+  quotation Quotation @relation(fields: [quotation_id], references: [id])
+  vendor    Vendor    @relation(fields: [vendor_id], references: [id])
+  invoice   Invoice?
+  attachments Attachment[]
 
   @@map("purchase_orders")
 }
 
 model Invoice {
-  id            String        @id @default(cuid())
-  invoiceNumber String        @unique
-  poId          String
-  vendorId      String
-  subtotal      Float
-  taxRate       Float         @default(18)
-  taxAmount     Float
-  total         Float
-  status        InvoiceStatus @default(DRAFT)
-  dueDate       DateTime?
-  sentAt        DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  invoice_number String        @unique
+  po_id          String        @unique
+  subtotal       Float
+  tax_rate       Float         @default(18)
+  tax_amount     Float
+  total          Float
+  status         InvoiceStatus @default(DRAFT)
+  sent_at        DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
 
-  po     PurchaseOrder @relation(fields: [poId], references: [id])
-  vendor Vendor        @relation(fields: [vendorId], references: [id])
+  purchase_order PurchaseOrder @relation(fields: [po_id], references: [id])
 
   @@map("invoices")
 }
 
 model ActivityLog {
-  id         String   @id @default(cuid())
-  userId     String?
-  action     String
-  entityType String
-  entityId   String?
-  metadata   Json?
-  ipAddress  String?
-  createdAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  user_id     String
+  action      String
+  entity_type String
+  entity_id   String
+  metadata    Json?
+  ip_address  String?
+  created_at  DateTime @default(now())
 
-  user User? @relation(fields: [userId], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("activity_logs")
 }
 
 model Attachment {
-  id         String   @id @default(cuid())
-  entityType String
-  entityId   String
-  filename   String
-  url        String
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  entity_type  String
+  entity_id    String
+  file_name    String
+  file_path    String
+  mime_type    String
+  file_size    Int
+  uploaded_by  String
+  created_at   DateTime @default(now())
+
+  uploader     User    @relation(fields: [uploaded_by], references: [id])
+  rfq          Rfq?    @relation(fields: [entity_id], references: [id], map: "attachment_rfq_fk")
+  purchase_order PurchaseOrder? @relation(fields: [entity_id], references: [id], map: "attachment_po_fk")
 
   @@map("attachments")
 }

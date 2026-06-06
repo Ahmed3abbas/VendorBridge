@@ -1,16 +1,16 @@
-import prisma from '../../config/db.js';
-import AppError from '../../utils/AppError.js';
+import db from '../../config/db.js';
+import { AppError } from '../../utils/AppError.js';
 import { calculateTax } from '../../utils/calculateTax.js';
 import { generateInvoiceNumber } from '../../utils/generateInvoiceNumber.js';
 
 const invoiceIncludes = {
-  vendor: true,
-  po: {
+  purchase_order: {
     include: {
+      vendor: true,
       quotation: {
         include: {
           rfq: true,
-          items: { include: { rfqItem: true } },
+          items: { include: { rfq_item: true } },
         },
       },
     },
@@ -18,29 +18,27 @@ const invoiceIncludes = {
 };
 
 export const generateInvoice = async ({ poId, taxRate = 18 }) => {
-  const po = await prisma.purchaseOrder.findUnique({
+  const po = await db.purchaseOrder.findUnique({
     where: { id: poId },
     include: { quotation: { include: { items: true } }, vendor: true },
   });
   if (!po) throw new AppError('Purchase order not found', 404, 'NOT_FOUND');
 
-  const existing = await prisma.invoice.findFirst({ where: { poId } });
+  const existing = await db.invoice.findFirst({ where: { po_id: poId } });
   if (existing) throw new AppError('Invoice already exists for this PO', 400, 'DUPLICATE');
 
   const subtotal = po.quotation.items.reduce((sum, i) => sum + i.subtotal, 0);
-  const { taxAmount, total } = calculateTax(subtotal, taxRate);
-  const invoiceNumber = await generateInvoiceNumber();
+  const { tax_amount, total } = calculateTax(subtotal, taxRate);
+  const invoice_number = await generateInvoiceNumber();
 
-  return prisma.invoice.create({
+  return db.invoice.create({
     data: {
-      invoiceNumber,
-      poId,
-      vendorId: po.vendorId,
+      invoice_number,
+      po_id: poId,
       subtotal,
-      taxRate,
-      taxAmount,
+      tax_rate: taxRate,
+      tax_amount,
       total,
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     },
     include: invoiceIncludes,
   });
@@ -49,33 +47,30 @@ export const generateInvoice = async ({ poId, taxRate = 18 }) => {
 export const listInvoices = async ({ status, page = 1, limit = 20 }) => {
   const where = status ? { status } : {};
   const [data, total] = await Promise.all([
-    prisma.invoice.findMany({
+    db.invoice.findMany({
       where,
       include: invoiceIncludes,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { created_at: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
     }),
-    prisma.invoice.count({ where }),
+    db.invoice.count({ where }),
   ]);
   return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
 };
 
 export const getInvoiceById = async (id) => {
-  const invoice = await prisma.invoice.findUnique({ where: { id }, include: invoiceIncludes });
+  const invoice = await db.invoice.findUnique({ where: { id }, include: invoiceIncludes });
   if (!invoice) throw new AppError('Invoice not found', 404, 'NOT_FOUND');
   return invoice;
 };
 
 export const updateInvoiceStatus = async (id, status) => {
-  const invoice = await prisma.invoice.findUnique({ where: { id } });
+  const invoice = await db.invoice.findUnique({ where: { id } });
   if (!invoice) throw new AppError('Invoice not found', 404, 'NOT_FOUND');
-  return prisma.invoice.update({ where: { id }, data: { status } });
+  return db.invoice.update({ where: { id }, data: { status } });
 };
 
 export const markInvoiceSent = async (id) => {
-  return prisma.invoice.update({
-    where: { id },
-    data: { status: 'SENT', sentAt: new Date() },
-  });
+  return db.invoice.update({ where: { id }, data: { status: 'SENT', sent_at: new Date() } });
 };

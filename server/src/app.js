@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import morgan from 'morgan';
 import { env } from './config/env.js';
-import errorHandler from './middlewares/errorHandler.js';
-import authenticate from './middlewares/auth.middleware.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 // M1 routes
 import authRoutes from './modules/auth/auth.routes.js';
@@ -20,23 +20,26 @@ import reportsRoutes from './modules/reports/reports.routes.js';
 
 const app = express();
 
+app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
-app.use(morgan('dev'));
-app.use(express.json());
+app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Public
+// M1 routes
 app.use('/api/auth', authRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/rfq', rfqRoutes);
+app.use('/api', quotationRoutes);
 
-// Protected
-app.use('/api/vendors', authenticate, vendorRoutes);
-app.use('/api/rfqs', authenticate, rfqRoutes);
-app.use('/api/quotations', authenticate, quotationRoutes);
-app.use('/api/approvals', authenticate, approvalsRoutes);
-app.use('/api/purchase-orders', authenticate, poRoutes);
-app.use('/api/invoices', authenticate, invoicesRoutes);
-app.use('/api/activity-logs', authenticate, activityLogsRoutes);
-app.use('/api/reports', authenticate, reportsRoutes);
+// M2 routes
+app.use('/api/approvals', approvalsRoutes);
+app.use('/api/purchase-orders', poRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/activity-logs', activityLogsRoutes);
+app.use('/api/reports', reportsRoutes);
+
+app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.use(errorHandler);
 

@@ -1,14 +1,8 @@
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { readFile } from 'fs/promises';
 import asyncHandler from '../../utils/asyncHandler.js';
 import { sendSuccess } from '../../utils/apiResponse.js';
 import { generatePDF } from '../../utils/generatePDF.js';
 import { sendEmail } from '../../utils/sendEmail.js';
 import * as service from './invoices.service.js';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const INVOICE_TEMPLATE = join(__dirname, '../../templates/invoice.html');
 
 export const create = asyncHandler(async (req, res) => {
   const data = await service.generateInvoice(req.body);
@@ -29,18 +23,19 @@ export const getById = asyncHandler(async (req, res) => {
 
 export const downloadPDF = asyncHandler(async (req, res) => {
   const invoice = await service.getInvoiceById(req.params.id);
-  const items = invoice.po.quotation.items
-    .map((i) => `<tr><td>${i.rfqItem.description}</td><td>${i.quantity}</td><td>₹${i.unitPrice}</td><td>₹${i.subtotal}</td></tr>`)
+  const po = invoice.purchase_order;
+  const items = po.quotation.items
+    .map((i) => `<tr><td>${i.rfq_item.product_name}</td><td>${i.quantity}</td><td>₹${i.unit_price}</td><td>₹${i.subtotal}</td></tr>`)
     .join('');
 
-  const cgst = (invoice.taxAmount / 2).toFixed(2);
-  const buffer = await generatePDF(INVOICE_TEMPLATE, {
-    invoiceNumber: invoice.invoiceNumber,
-    invoiceDate: new Date(invoice.createdAt).toLocaleDateString('en-IN'),
-    dueDate: invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-IN') : 'N/A',
-    vendorName: invoice.vendor.name,
-    vendorEmail: invoice.vendor.email,
-    vendorGST: invoice.vendor.gstNumber || 'N/A',
+  const cgst = (invoice.tax_amount / 2).toFixed(2);
+  const buffer = await generatePDF('invoice.html', {
+    invoiceNumber: invoice.invoice_number,
+    invoiceDate: new Date(invoice.created_at).toLocaleDateString('en-IN'),
+    dueDate: 'N/A',
+    vendorName: po.vendor.name,
+    vendorEmail: po.vendor.contact_email,
+    vendorGST: po.vendor.gst_number || 'N/A',
     itemsRows: items,
     subtotal: invoice.subtotal.toFixed(2),
     cgst,
@@ -49,24 +44,25 @@ export const downloadPDF = asyncHandler(async (req, res) => {
   });
 
   res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="${invoice.invoiceNumber}.pdf"`);
+  res.setHeader('Content-Disposition', `attachment; filename="${invoice.invoice_number}.pdf"`);
   res.send(buffer);
 });
 
 export const sendInvoiceEmail = asyncHandler(async (req, res) => {
   const invoice = await service.getInvoiceById(req.params.id);
-  const items = invoice.po.quotation.items
-    .map((i) => `<tr><td>${i.rfqItem.description}</td><td>${i.quantity}</td><td>₹${i.unitPrice}</td><td>₹${i.subtotal}</td></tr>`)
+  const po = invoice.purchase_order;
+  const items = po.quotation.items
+    .map((i) => `<tr><td>${i.rfq_item.product_name}</td><td>${i.quantity}</td><td>₹${i.unit_price}</td><td>₹${i.subtotal}</td></tr>`)
     .join('');
 
-  const cgst = (invoice.taxAmount / 2).toFixed(2);
-  const buffer = await generatePDF(INVOICE_TEMPLATE, {
-    invoiceNumber: invoice.invoiceNumber,
-    invoiceDate: new Date(invoice.createdAt).toLocaleDateString('en-IN'),
-    dueDate: invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString('en-IN') : 'N/A',
-    vendorName: invoice.vendor.name,
-    vendorEmail: invoice.vendor.email,
-    vendorGST: invoice.vendor.gstNumber || 'N/A',
+  const cgst = (invoice.tax_amount / 2).toFixed(2);
+  const buffer = await generatePDF('invoice.html', {
+    invoiceNumber: invoice.invoice_number,
+    invoiceDate: new Date(invoice.created_at).toLocaleDateString('en-IN'),
+    dueDate: 'N/A',
+    vendorName: po.vendor.name,
+    vendorEmail: po.vendor.contact_email,
+    vendorGST: po.vendor.gst_number || 'N/A',
     itemsRows: items,
     subtotal: invoice.subtotal.toFixed(2),
     cgst,
@@ -74,13 +70,12 @@ export const sendInvoiceEmail = asyncHandler(async (req, res) => {
     total: invoice.total.toFixed(2),
   });
 
-  const emailHtml = await readFile(join(__dirname, '../../templates/email-approval-notification.html'), 'utf-8');
-
   await sendEmail({
-    to: invoice.vendor.email,
-    subject: `Invoice ${invoice.invoiceNumber} from VendorBridge`,
-    html: emailHtml.replaceAll('{{invoiceNumber}}', invoice.invoiceNumber),
-    attachments: [{ filename: `${invoice.invoiceNumber}.pdf`, content: buffer }],
+    to: po.vendor.contact_email,
+    subject: `Invoice ${invoice.invoice_number} from VendorBridge`,
+    templateName: 'email-approval-notification.html',
+    data: { invoiceNumber: invoice.invoice_number },
+    attachments: [{ filename: `${invoice.invoice_number}.pdf`, content: buffer }],
   });
 
   await service.markInvoiceSent(req.params.id);

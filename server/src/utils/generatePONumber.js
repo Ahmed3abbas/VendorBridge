@@ -1,11 +1,12 @@
-import prisma from '../config/db.js';
+import db from '../config/db.js';
 
-export const generatePONumber = async () => {
+export async function generatePONumber() {
   const year = new Date().getFullYear();
-  const last = await prisma.purchaseOrder.findFirst({
-    where: { poNumber: { startsWith: `PO-${year}-` } },
-    orderBy: { poNumber: 'desc' },
+  const prefix = `PO-${year}-`;
+  const last = await db.purchaseOrder.findFirst({
+    where: { po_number: { startsWith: prefix } },
+    orderBy: { po_number: 'desc' },
   });
-  const seq = last ? parseInt(last.poNumber.split('-')[2]) + 1 : 1;
-  return `PO-${year}-${String(seq).padStart(4, '0')}`;
-};
+  const seq = last ? parseInt(last.po_number.split('-')[2]) + 1 : 1;
+  return `${prefix}${String(seq).padStart(4, '0')}`;
+}

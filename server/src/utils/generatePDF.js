@@ -1,18 +1,22 @@
 import puppeteer from 'puppeteer';
-import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-export const generatePDF = async (templatePath, data) => {
-  let html = await readFile(templatePath, 'utf-8');
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-  Object.entries(data).forEach(([key, value]) => {
+export async function generatePDF(templateName, data) {
+  const templatePath = join(__dirname, '../templates', templateName);
+  let html = readFileSync(templatePath, 'utf-8');
+
+  for (const [key, value] of Object.entries(data)) {
     html = html.replaceAll(`{{${key}}}`, value ?? '');
-  });
+  }
 
   const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: 'networkidle0' });
-  const buffer = await page.pdf({ format: 'A4', printBackground: true });
+  const pdf = await page.pdf({ format: 'A4', printBackground: true });
   await browser.close();
-
-  return buffer;
-};
+  return pdf;
+}

@@ -1,13 +1,11 @@
-import { sendError } from '../utils/apiResponse.js';
+import { AppError } from '../utils/AppError.js';
 
-const validate = (schema) => (req, res, next) => {
+export const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
   if (!result.success) {
-    const fields = result.error.errors.map((e) => ({ field: e.path.join('.'), message: e.message }));
-    return sendError(res, 422, 'VALIDATION_ERROR', 'Validation failed', fields);
+    const message = result.error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');
+    throw new AppError(message, 422, 'VALIDATION_ERROR');
   }
   req.body = result.data;
   next();
 };
-
-export default validate;

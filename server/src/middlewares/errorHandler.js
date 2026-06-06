@@ -1,12 +1,13 @@
-import { sendError } from '../utils/apiResponse.js';
 import logger from '../config/logger.js';
 
-// eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
-  if (!err.isOperational) logger.error(err);
+export function errorHandler(err, req, res, next) {
   const status = err.statusCode || 500;
   const code = err.code || 'INTERNAL_ERROR';
-  sendError(res, status, code, err.message || 'Something went wrong');
-};
 
-export default errorHandler;
+  if (status >= 500) logger.error(err.message, { stack: err.stack, path: req.path });
+
+  res.status(status).json({
+    success: false,
+    error: { code, message: err.isOperational ? err.message : 'Internal server error' },
+  });
+}

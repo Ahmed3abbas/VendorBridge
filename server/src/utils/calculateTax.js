@@ -1,9 +1,9 @@
-export const calculateTax = (subtotal, taxRate = 18) => {
-  const taxAmount = Math.round(subtotal * (taxRate / 100) * 100) / 100;
+export function calculateTax(subtotal, taxRate = 18) {
+  const tax_amount = parseFloat(((subtotal * taxRate) / 100).toFixed(2));
   return {
-    subtotal: Math.round(subtotal * 100) / 100,
-    taxRate,
-    taxAmount,
-    total: Math.round((subtotal + taxAmount) * 100) / 100,
+    subtotal: parseFloat(subtotal.toFixed(2)),
+    tax_rate: taxRate,
+    tax_amount,
+    total: parseFloat((subtotal + tax_amount).toFixed(2)),
   };
-};
+}

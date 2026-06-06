@@ -1,37 +1,37 @@
-import prisma from '../../config/db.js';
+import db from '../../config/db.js';
 
 export const getDashboard = async ({ userId, role }) => {
   const isVendor = role === 'VENDOR';
   const isOfficer = role === 'PROCUREMENT_OFFICER';
 
   const vendorId = isVendor
-    ? (await prisma.user.findUnique({ where: { id: userId }, select: { vendorId: true } }))?.vendorId
+    ? (await db.user.findUnique({ where: { id: userId }, include: { vendor: { select: { id: true } } } }))?.vendor?.id
     : null;
 
   const [pendingApprovals, activeRFQs, recentPOs, recentInvoices] = await Promise.all([
     isVendor
       ? 0
-      : prisma.approval.count({ where: { status: 'PENDING' } }),
+      : db.approval.count({ where: { status: 'PENDING' } }),
 
-    prisma.rFQ.count({
+    db.rfq.count({
       where: {
         status: 'OPEN',
-        ...(isOfficer ? { createdById: userId } : {}),
-        ...(isVendor ? { rfqVendors: { some: { vendorId } } } : {}),
+        ...(isOfficer ? { created_by: userId } : {}),
+        ...(isVendor ? { rfq_vendors: { some: { vendor_id: vendorId } } } : {}),
       },
     }),
 
-    prisma.purchaseOrder.findMany({
-      where: vendorId ? { vendorId } : {},
+    db.purchaseOrder.findMany({
+      where: vendorId ? { vendor_id: vendorId } : {},
       include: { vendor: { select: { name: true } } },
-      orderBy: { issuedAt: 'desc' },
+      orderBy: { issued_at: 'desc' },
       take: 5,
     }),
 
-    prisma.invoice.findMany({
-      where: vendorId ? { vendorId } : {},
-      include: { vendor: { select: { name: true } } },
-      orderBy: { createdAt: 'desc' },
+    db.invoice.findMany({
+      where: vendorId ? { purchase_order: { vendor_id: vendorId } } : {},
+      include: { purchase_order: { include: { vendor: { select: { name: true } } } } },
+      orderBy: { created_at: 'desc' },
       take: 5,
     }),
   ]);
@@ -45,43 +45,43 @@ export const getSpendTrend = async () => {
   twelveMonthsAgo.setDate(1);
   twelveMonthsAgo.setHours(0, 0, 0, 0);
 
-  const pos = await prisma.purchaseOrder.findMany({
-    where: { issuedAt: { gte: twelveMonthsAgo } },
-    select: { issuedAt: true, total: true },
+  const pos = await db.purchaseOrder.findMany({
+    where: { issued_at: { gte: twelveMonthsAgo } },
+    select: { issued_at: true, total_amount: true },
   });
 
   const monthly = {};
-  pos.forEach(({ issuedAt, total }) => {
-    const key = `${issuedAt.getFullYear()}-${String(issuedAt.getMonth() + 1).padStart(2, '0')}`;
-    monthly[key] = (monthly[key] || 0) + total;
+  pos.forEach(({ issued_at, total_amount }) => {
+    const key = `${issued_at.getFullYear()}-${String(issued_at.getMonth() + 1).padStart(2, '0')}`;
+    monthly[key] = (monthly[key] || 0) + total_amount;
   });
 
   return Object.entries(monthly)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([month, total]) => ({ month, total: Math.round(total * 100) / 100 }));
+    .map(([month, total]) => ({ month, total: parseFloat(total.toFixed(2)) }));
 };
 
 export const getVendorPerformance = async () => {
-  const vendors = await prisma.vendor.findMany({
+  const vendors = await db.vendor.findMany({
     where: { status: 'ACTIVE' },
     include: {
-      purchaseOrders: { select: { total: true, status: true, issuedAt: true } },
+      purchase_orders: { select: { total_amount: true, status: true } },
       quotations: { select: { status: true } },
     },
   });
 
   return vendors.map((v) => {
-    const totalPOs = v.purchaseOrders.length;
-    const totalSpend = v.purchaseOrders.reduce((s, p) => s + p.total, 0);
+    const totalPOs = v.purchase_orders.length;
+    const totalSpend = v.purchase_orders.reduce((s, p) => s + p.total_amount, 0);
     const wonQuotes = v.quotations.filter((q) => q.status === 'SELECTED').length;
     const totalQuotes = v.quotations.length;
-    const completedPOs = v.purchaseOrders.filter((p) => p.status === 'COMPLETED').length;
+    const completedPOs = v.purchase_orders.filter((p) => p.status === 'COMPLETED').length;
 
     return {
       vendorId: v.id,
       vendorName: v.name,
       totalPOs,
-      totalSpend: Math.round(totalSpend * 100) / 100,
+      totalSpend: parseFloat(totalSpend.toFixed(2)),
       winRate: totalQuotes ? Math.round((wonQuotes / totalQuotes) * 100) : 0,
       onTimeRate: totalPOs ? Math.round((completedPOs / totalPOs) * 100) : 0,
     };

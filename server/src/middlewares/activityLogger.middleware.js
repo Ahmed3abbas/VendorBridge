@@ -1,4 +1,4 @@
-import prisma from '../config/db.js';
+import db from '../config/db.js';
 
 const activityLogger = (action, entityType) => async (req, res, next) => {
   const originalJson = res.json.bind(res);
@@ -6,14 +6,14 @@ const activityLogger = (action, entityType) => async (req, res, next) => {
   res.json = (body) => {
     if (res.statusCode < 400 && req.user) {
       const entityId = body?.data?.id || req.params?.id || null;
-      prisma.activityLog.create({
+      db.activityLog.create({
         data: {
-          userId: req.user.id,
+          user_id: req.user.id,
           action,
-          entityType,
-          entityId,
+          entity_type: entityType,
+          entity_id: entityId || '',
           metadata: { method: req.method, path: req.path },
-          ipAddress: req.ip,
+          ip_address: req.ip,
         },
       }).catch(() => {});
     }

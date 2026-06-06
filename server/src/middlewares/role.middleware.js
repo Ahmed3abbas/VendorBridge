@@ -1,10 +1,8 @@
-import AppError from '../utils/AppError.js';
+import { AppError } from '../utils/AppError.js';
 
-const requireRole = (...roles) => (req, res, next) => {
+export const requireRole = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user?.role)) {
-    return next(new AppError('Forbidden: insufficient permissions', 403, 'FORBIDDEN'));
+    throw new AppError('Insufficient permissions', 403, 'FORBIDDEN');
   }
   next();
 };
-
-export default requireRole;

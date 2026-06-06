@@ -1,3 +1,10 @@
+export const successResponse = (res, data, message = 'Success', status = 200) =>
+  res.status(status).json({ success: true, message, data });
+
+export const paginatedResponse = (res, data, pagination) =>
+  res.status(200).json({ success: true, data, pagination });
+
+// M2 aliases
 export const sendSuccess = (res, data, message = 'Success', statusCode = 200, pagination = null) => {
   const body = { success: true, message, data };
   if (pagination) body.pagination = pagination;
